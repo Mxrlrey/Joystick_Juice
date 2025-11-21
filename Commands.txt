@@ -1,0 +1,16 @@
+Rodar o Docker: docker compose up --build
+Derrubar o Docker: docker-compose down -v
+
+Abrir a DB: docker exec -it joystick-juice-db-1 psql -U postgres -d joystickjuice -W
+senha: 1234567
+
+Ver todas as tabelas: \dt
+Ver uma tabela em especifico: SELECT * FROM "Table_table";
+
+Listar as migrations criadas: docker compose exec web ls -l Users/migrations
+Criar migrations: docker compose exec web python manage.py makemigrations Exemplo
+Executar o arquivo existente: docker compose exec web python manage.py migrate Exemplo
+
+docker compose exec web python manage.py runserver
+
+Criar app: python manage.py startapp Exemplo

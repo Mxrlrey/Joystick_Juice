@@ -1,0 +1,6 @@
+Django>=5.0
+requests
+gunicorn
+psycopg2-binary
+python-dotenv
+Pillow
