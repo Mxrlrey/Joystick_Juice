@@ -4,3 +4,10 @@ GENDER_OPTIONS = [
     ('O', 'Outro'),
     ('N', 'Prefiro não informar'),
 ]
+
+STATUS_CHOICES = [
+    ('P', 'Para jogar'),
+    ('J', 'Jogando'),
+    ('C', 'Concluído'),
+    ('A', 'Abandonado'),
+]

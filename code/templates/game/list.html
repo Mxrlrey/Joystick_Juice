@@ -1,0 +1,31 @@
+{% load static %}
+
+{% block title %}Joystick Juice{% endblock %}
+
+{% block content %}
+  <h1>Jogos Cadastrados</h1>
+  <div class="game-list">
+    {% if games %}
+      {% for jogo in games %}
+      <div class="game-card">
+        {% if jogo.cover_url %}
+          <img src="{{ jogo.cover_url }}" alt="{{ jogo.title }} capa" />
+        {% else %}
+          <div class="no-image">
+            Sem imagem
+          </div>
+        {% endif %}
+        <div class="game-info">
+          <p class="game-title">{{ jogo.title }}</p>
+          <p class="game-genre"><strong>Gênero:</strong> {{ jogo.genre|default:"Indefinido" }}</p>
+          <p class="game-release"><strong>Lançamento:</strong> {{ jogo.release_date|date:"d/m/Y" }}</p>
+          <p class="game-developer"><strong>Desenvolvedor:</strong> {{ jogo.developer|default:"Desconhecido" }}</p>
+          <p class="game-synopsis">{{ jogo.synopsis|default:"Sem descrição." }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p>Nenhum jogo cadastrado ainda.</p>
+    {% endif %}
+  </div>
+{% endblock %}
