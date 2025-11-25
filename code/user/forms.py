@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.contrib.auth.models import User
 from .models import Person
@@ -37,25 +39,25 @@ class SignupForm(forms.Form):
         return user
 
 
-class LoginForm(forms.Form):
-    email = forms.EmailField(label="Email")
-    password = forms.CharField(widget=forms.PasswordInput, label="Senha")
+class PersonForm(forms.ModelForm):
+
+    class Meta:
+        model = Person
+        fields = ['name', 'birthdate', 'gender', 'bio']
 
     def clean(self):
         cleaned_data = super().clean()
-        email = cleaned_data.get("email")
-        password = cleaned_data.get("password")
+        birthdate = cleaned_data.get("birthdate")
 
-        if email and password:
-            from django.contrib.auth.models import User
-            try:
-                user = User.objects.get(email=email)
-            except User.DoesNotExist:
-                raise forms.ValidationError("Email ou senha inválidos")
+        if birthdate:
+            if birthdate > datetime.date.today():
+                raise forms.ValidationError("Data invalida")
 
-            user = authenticate(username=user.username, password=password)
-            if user is None:
-                raise forms.ValidationError("Email ou senha inválidos")
-
-            cleaned_data['user'] = user
         return cleaned_data
+
+class AvatarForm(forms.ModelForm):
+
+    class Meta:
+        model = Person
+        fields = ['avatar_url']
+
