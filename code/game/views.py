@@ -122,3 +122,8 @@ def list_games(request):
     games = Game.objects.all()
     return render(request, 'game/list.html', {'games': games})
 
+#feito por gabriel, consulte ele
+def game_detail(request, game_id):
+    game = get_object_or_404(Game, pk=game_id)
+    return render(request, "game/detail.html", {"game": game})
+

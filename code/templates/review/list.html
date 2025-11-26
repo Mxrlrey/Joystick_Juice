@@ -1,0 +1,26 @@
+{% load static %}
+
+{% block title %}Avaliações — Joystick Juice{% endblock %}
+
+{% block content %}
+<h1>Avaliações de {{ game.title }}</h1>
+
+<div class="review-list">
+  {% if reviews %}
+    {% for review in reviews %}
+      <div class="review-card">
+        <div class="review-info">
+          <p class="review-user"><strong>Usuário:</strong> {{ review.user.username }}</p>
+          <p class="review-score"><strong>Nota:</strong> {{ review.score }}</p>
+          <p class="review-comment">{{ review.comment }}</p>
+
+          <a href="{% url 'detail_review' review.pk %}">Ver detalhes</a>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>Este jogo ainda não possui avaliações.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

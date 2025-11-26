@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if request.resolver_match.url_name == "create_review" %}
+    Criar Avaliação
+  {% elif request.resolver_match.url_name == "edit_review" %}
+    Editar Avaliação
+  {% elif request.resolver_match.url_name == "delete_review" %}
+    Excluir Avaliação
+  {% else %}
+    Avaliação
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+
+    <div class="card shadow mb-4">
+
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+
+          {% if request.resolver_match.url_name == "create_review" %}
+            <i class="fas fa-star"></i> Criar Avaliação
+
+          {% elif request.resolver_match.url_name == "edit_review" %}
+            <i class="fas fa-edit"></i> Editar Avaliação
+
+          {% elif request.resolver_match.url_name == "delete_review" %}
+            <i class="fas fa-trash"></i> Excluir Avaliação
+
+          {% else %}
+            Avaliação
+          {% endif %}
+
+        </h6>
+      </div>
+
+      <div class="card-body">
+
+        <form action="" method="post">
+          {% csrf_token %}
+
+          {% if request.resolver_match.url_name != "delete_review" %}
+            {{ form.as_p }}
+          {% endif %}
+
+          {% if request.resolver_match.url_name == "delete_review" %}
+            <p class="text-danger mt-2">
+              Tem certeza que deseja excluir esta avaliação?
+            </p>
+
+            <div class="d-flex justify-content-between mt-3">
+              <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Confirmar Exclusão
+              </button>
+
+              <a href="{% url 'detail_review' review.pk %}" class="btn btn-secondary">
+                Cancelar
+              </a>
+            </div>
+
+          {% else %}
+
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Salvar
+            </button>
+
+            <a href="{% url 'detail_review' review.pk %}" class="btn btn-secondary">
+              Cancelar
+            </a>
+
+          {% endif %}
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
