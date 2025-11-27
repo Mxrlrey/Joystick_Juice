@@ -1,20 +1,16 @@
 import os
 import requests
 from datetime import datetime
-from django.views.generic import DetailView, ListView
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from game.models import Game
+from game.models import Game, UserGameList
+from joystickjuice.utils import STATUS_CHOICES
 
 User = get_user_model()
 
-# -------------------
 # Integração IGDB
-# -------------------
-
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 
@@ -30,6 +26,7 @@ def get_igdb_token():
     return resp.json()["access_token"]
 
 def fetch_and_save(request):
+    """Busca jogo na IGDB e salva no banco"""
     if request.method == "POST":
         game_name = request.POST.get("nome")
         token = get_igdb_token()
@@ -56,7 +53,9 @@ def fetch_and_save(request):
         if data:
             game_data = data[0]
 
-            if Game.objects.filter(title__iexact=game_data.get("name", "")).exists():
+            existing_game = Game.objects.filter(title__iexact=game_data.get("name", "")).first()
+            if existing_game:
+                messages.info(request, f"O jogo '{existing_game.title}' já existe na base.")
                 return redirect("list_game")
 
             genre = ""
@@ -75,9 +74,7 @@ def fetch_and_save(request):
 
             release_date = None
             if game_data.get("first_release_date"):
-                release_date = datetime.utcfromtimestamp(
-                    game_data["first_release_date"]
-                ).date()
+                release_date = datetime.utcfromtimestamp(game_data["first_release_date"]).date()
 
             cover_url = game_data.get("cover", {}).get("url", "")
             if cover_url and cover_url.startswith("//"):
@@ -99,11 +96,12 @@ def fetch_and_save(request):
             if "videos" in game_data and game_data["videos"]:
                 try:
                     video_id = game_data["videos"][0]["video_id"]
-                    trailer_url = f"https://www.youtube.com/embed/{video_id}"
+                    # Adiciona parâmetros de embed que melhoram compatibilidade
+                    trailer_url = f"https://www.youtube.com/embed/{video_id}?rel=0&modestbranding=1&enablejsapi=1"
                 except (TypeError, KeyError):
                     trailer_url = ""
 
-            Game.objects.create(
+            new_game = Game(
                 title=game_data.get("name", game_name),
                 genre=genre or "Indefinido",
                 release_date=release_date or datetime.today().date(),
@@ -113,17 +111,105 @@ def fetch_and_save(request):
                 banner_url=banner_url,
                 trailer_url=trailer_url
             )
+            new_game.save()
+            messages.success(request, f"Jogo '{new_game.title}' adicionado com sucesso.")
 
         return redirect("list_game")
 
     return render(request, "game/fill.html")
 
+# Listagem de jogos
 def list_games(request):
     games = Game.objects.all()
-    return render(request, 'game/list.html', {'games': games})
+    return render(request, "game/list.html", {"games": games})
 
-#feito por gabriel, consulte ele
+# Detalhe do jogo
 def game_detail(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
-    return render(request, "game/detail.html", {"game": game})
+    user = request.user
 
+    if user.is_authenticated:
+        ug = UserGameList.objects.filter(user=user, game=game).first()
+        in_list = ug is not None
+        user_status = ug.status if ug else "P"
+    else:
+        in_list = False
+        user_status = None
+
+    context = {
+        "game": game,
+        "in_list": in_list,
+        "user_status": user_status,
+    }
+    return render(request, "game/detail.html", context)
+
+# Lista de jogos do usuário (manual, sem CBV)
+@login_required
+def user_game_list(request, pk=None):
+
+    if pk:
+        user_profile = get_object_or_404(User, pk=pk)
+    else:
+        user_profile = request.user
+
+    qs = UserGameList.objects.filter(user=user_profile)
+    status = request.GET.get("status")
+    if status and status != "T":
+        qs = qs.filter(status=status)
+
+    context = {
+        "user_games": qs,
+        "user_profile": user_profile,
+        "current_status": status or "T",
+    }
+    return render(request, "games/user_game_list.html", context)
+
+# Adicionar / atualizar / remover jogos da lista do usuário
+@login_required
+def add_to_list(request, game_id):
+    game = get_object_or_404(Game, pk=game_id)
+    user = request.user
+
+    ug = UserGameList.objects.filter(user=user, game=game).first()
+    if ug:
+        messages.info(request, f"'{game.title}' já está na sua lista.")
+    else:
+        ug = UserGameList(user=user, game=game, status="P")
+        ug.save()
+        messages.success(request, f"'{game.title}' adicionado à sua lista (Para jogar).")
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def update_game_status(request, game_id):
+    if request.method == "POST":
+        status = request.POST.get("status")
+        if status not in dict(STATUS_CHOICES):
+            messages.error(request, "Status inválido.")
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+
+        user = request.user
+        ug = UserGameList.objects.filter(user=user, game_id=game_id).first()
+
+        if ug:
+            ug.status = status
+            ug.save()
+            messages.success(request, f"Status de '{ug.game.title}' atualizado para {ug.get_status_display()}.")
+        else:
+            ug = UserGameList(user=user, game_id=game_id, status=status)
+            ug.save()
+            messages.success(request, f"'{ug.game.title}' adicionado à sua lista com status {ug.get_status_display()}.")
+
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def remove_from_list(request, game_id):
+    user = request.user
+    ug = UserGameList.objects.filter(user=user, game_id=game_id).first()
+    if ug:
+        ug.delete()
+        messages.success(request, "Jogo removido da sua lista.")
+    else:
+        messages.info(request, "Jogo não estava na sua lista.")
+    return redirect(request.META.get("HTTP_REFERER", "/"))

@@ -3,7 +3,6 @@ from joystickjuice.utils import STATUS_CHOICES
 from django.conf import settings
 
 class Game(models.Model):
-    gameID = models.AutoField(primary_key=True)
     title = models.CharField(max_length=100, unique=True)
     genre = models.CharField(max_length=50)
     release_date = models.DateField()

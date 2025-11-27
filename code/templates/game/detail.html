@@ -1,0 +1,95 @@
+{% load static %}
+
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ game.title }} — Joystick Juice</title>
+    <link rel="stylesheet" href="{% static 'css/game/detail.css' %}">
+</head>
+<body>
+
+<div class="game-container">
+
+    <!-- Hero: banner + cover + título -->
+    <div class="game-hero">
+        {% if game.banner_url %}
+        <div class="game-banner">
+            <img src="{{ game.banner_url }}" alt="{{ game.title }} Banner">
+        </div>
+        {% endif %}
+
+        {% if game.cover_url %}
+        <div class="game-cover">
+            <img src="{{ game.cover_url }}" alt="{{ game.title }}">
+        </div>
+        {% endif %}
+
+        <h1>{{ game.title }}</h1>
+    </div>
+
+    <!-- Bio / sinopse -->
+    <div class="game-synopsis">
+        <p>{{ game.synopsis }}</p>
+    </div>
+
+    <!-- Detalhes -->
+    <div class="game-details">
+        <p><strong>Gênero:</strong> {{ game.genre }}</p>
+        <p><strong>Lançamento:</strong> {{ game.release_date }}</p>
+        <p><strong>Desenvolvedor:</strong> {{ game.developer|default:"Desconhecido" }}</p>
+    </div>
+
+    <!-- Trailer -->
+    {% if game.trailer_url %}
+    <div class="game-trailer">
+        <iframe
+            src="{{ game.trailer_url }}"
+            width="560" height="315"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+            title="Trailer do jogo">
+        </iframe>
+    </div>
+    {% endif %}
+
+    <!-- Botões de ação para lista do usuário -->
+    {% if user.is_authenticated %}
+    <div class="game-actions">
+        {% if in_list %}
+        <p>Seu status atual: <strong>{{ user_status }}</strong></p>
+
+        <!-- Formulário para atualizar status -->
+        <form action="{% url 'update_game_status' game.id %}" method="post">
+            {% csrf_token %}
+            <label for="status">Alterar status:</label>
+            <select name="status" id="status">
+                <option value="P" {% if user_status == 'P' %}selected{% endif %}>Para jogar</option>
+                <option value="C" {% if user_status == 'C' %}selected{% endif %}>Concluído</option>
+                <option value="J" {% if user_status == 'J' %}selected{% endif %}>Jogando</option>
+                <option value="D" {% if user_status == 'D' %}selected{% endif %}>Abandonado</option>
+            </select>
+            <button type="submit">Atualizar</button>
+        </form>
+
+        <!-- Botão para remover da lista -->
+        <form action="{% url 'remove_from_list' game.id %}" method="post" style="margin-top: 10px;">
+            {% csrf_token %}
+            <button type="submit">Remover da lista</button>
+        </form>
+
+        {% else %}
+        <!-- Botão para adicionar à lista -->
+        <form action="{% url 'add_to_list' game.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Adicionar à lista</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
