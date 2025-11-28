@@ -22,6 +22,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Diretórios de mídia (uploads de usuários)
+media/
+
 # Arquivos de IDE
 .vscode/
 .idea/
