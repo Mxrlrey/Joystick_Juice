@@ -76,9 +76,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 #redirecinamento de acesso
-LOGIN_URL = '/acesso/login/'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/acesso/login/'
+LOGIN_URL = '/access/login/'
+LOGIN_REDIRECT_URL = 'account_user_list'
+LOGOUT_REDIRECT_URL = '/access/login/'
 
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'UTC'

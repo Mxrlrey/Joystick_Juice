@@ -1,0 +1,46 @@
+:root {
+  --bg: rgb(0, 0, 22); /* Fundo muito escuro (Deep Blue) */
+  --paper: #FFF4E6; /* Cor principal clara (Quase branco/creme) */
+  --accent: #F17A0D; /* Laranja Vívido (Destaque) */
+  --deep: #021E34; /* Azul mais escuro (Para elementos de navegação/rodapé) */
+  --glass: rgba(255, 244, 230, 0.04); /* Fundo transparente/glassmorphism */
+  --error-red: #e74c3c; /* Vermelho de erro */
+}
+
+/* 1. Cores de Fundo da Aplicação */
+body {
+  background-color: var(--bg);
+  color: var(--paper); /* Define a cor padrão do texto como a cor clara */
+}
+
+/* 2. Cores da Navbar e Footer (Usando --deep) */
+.navbar, .footer {
+  background-color: var(--deep) !important;
+  color: var(--paper) !important;
+  border-bottom: 2px solid var(--accent); /* Um toque da cor de destaque */
+}
+
+/* 3. Destaque (Accent) para Botões e Links Principais */
+.btn-primary, .bg-primary {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--deep) !important; /* Texto escuro em botões de destaque */
+}
+
+.btn-outline-primary {
+  color: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+/* 4. Cores do Texto Principal */
+h1, h2, h3, a {
+  color: var(--paper);
+}
+
+.nav-link {
+  color: var(--paper) !important;
+}
+
+.nav-link:hover {
+  color: var(--accent) !important;
+}

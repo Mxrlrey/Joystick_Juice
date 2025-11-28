@@ -61,3 +61,13 @@ class AvatarForm(forms.ModelForm):
         model = Person
         fields = ['avatar_url']
 
+class UserDeleteForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']  
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.disabled = True
+            field.widget.attrs['class'] = 'form-control'

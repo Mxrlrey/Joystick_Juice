@@ -1,25 +1,70 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import SignupForm, PersonForm, AvatarForm
+from .forms import SignupForm, PersonForm, AvatarForm, UserDeleteForm
 from .models import Person
-
-
-def index(request):
-    return HttpResponse("Voce logou mano!")
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponse("Criou em")
+            return redirect('login')
     else:
         form = SignupForm()
-    return render(request, 'user/signup.html', {'form': form})
+    return render(request, 'registration/signup.html', {'form': form})
 
-def edit_profile(request):
-    person = request.user.person
+@login_required
+def list_(request):
+    users = User.objects.all()
+
+    return render(request, 'account/index.html', {'users' : users})
+
+@login_required
+def detail_self(request):
     user = request.user
+
+    try:
+        person = user.person
+    except Exception:
+        person = None
+    
+    return render(request, 'account/detail.html', {'person': person, 'user_obj': user, 'is_owner': True})
+
+@login_required
+def detail_admin(request, user_id):
+    user_obj = get_object_or_404(User, pk=user_id)
+    try:
+        person = user_obj.person
+    except Exception:
+        person = None
+
+    is_owner = (request.user == user_obj)
+    return render(request, 'account/detail.html', {'person': person, 'user_obj': user_obj, 'is_owner': is_owner, 'admin_view': True})
+
+@login_required
+def delete(request):
+    user = request.user
+    
+    delete = True
+
+    if request.method == 'POST':
+        user.delete()
+
+        return redirect('account_signup')
+    else:
+        form = UserDeleteForm(instance=user)
+
+    return render(request, 'account/form.html', {'form': form, 'delete' : delete})
+
+@login_required
+def edit_profile(request):
+    user = request.user
+    person = request.user.person
+
+    edit_profile = True
+
     if request.method == 'POST':
         form = PersonForm(request.POST, instance=person)
         if form.is_valid():
@@ -29,11 +74,15 @@ def edit_profile(request):
     else:
         form = PersonForm(instance=person)
 
-    return render(request, 'user/edit_profile.html', {'form': form, 'user': user})
+    return render(request, 'account/form.html', {'form': form, 'user': user, 'edit_profile': edit_profile})
 
+@login_required
 def edit_avatar(request):
-    person = request.user.person
     user = request.user
+    person = request.user.person
+
+    edit_avatar = True
+
     if request.method == 'POST':
         form = AvatarForm(request.POST, request.FILES, instance=person)
         if form.is_valid():
@@ -43,4 +92,6 @@ def edit_avatar(request):
     else:
         form = AvatarForm(instance=person)
 
-    return render(request, 'user/edit_avatar.html', {'form': form, 'user': user})
+    return render(request, 'account/form.html', {'form': form, 'user': user, 'edit_avatar': edit_avatar})
+
+

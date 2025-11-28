@@ -1,0 +1,112 @@
+{# templates/account/form.html #}
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+  {% if delete %}Confirmar exclusão{% elif edit_avatar %}Escolher avatar{% elif edit_profile %}Atualizar perfil{% else %}Formulário{% endif %}
+{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+
+      <div class="card shadow-sm">
+        <div class="card-body">
+
+          <!-- Heading -->
+          <h3 class="card-title mb-3">
+            {% if delete %}
+              <i class="bi bi-trash-fill text-danger"></i> Confirmar exclusão de conta
+            {% elif edit_avatar %}
+              <i class="bi bi-image"></i> Escolher avatar
+            {% elif edit_profile %}
+              <i class="bi bi-person-lines-fill"></i> Atualizar perfil
+            {% else %}
+              Formulário
+            {% endif %}
+          </h3>
+
+          <!-- Optional explanatory text -->
+          {% if delete %}
+            <p class="text-warning">A exclusão é irreversível. Todos os seus dados serão apagados. Confirme abaixo para excluir sua conta.</p>
+          {% elif edit_avatar %}
+            <p class="text-muted">Envie uma imagem para usar como avatar. Tipos aceitos: JPG, PNG. Tamanho recomendado: 256x256.</p>
+          {% elif edit_profile %}
+            <p class="text-muted">Atualize seu nickname (username) e e-mail. Campos obrigatórios marcados.</p>
+          {% endif %}
+
+          <!-- Show current user info when available -->
+          {% if user %}
+            <div class="mb-3 small text-muted">
+              Logado como <strong>{{ user.username }}</strong> — {{ user.email }}
+            </div>
+          {% endif %}
+
+          {# If avatar upload is expected, include enctype #}
+          <form method="post"
+                {% if edit_avatar %} enctype="multipart/form-data" {% endif %}>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+              </div>
+            {% endif %}
+
+            {# Render each field with bootstrap classes and errors #}
+            {% for field in form %}
+              <div class="mb-3">
+                <label class="form-label">{{ field.label_tag }}</label>
+
+                {# For file input, keep default widget; for others, they should already have 'form-control' in forms.py #}
+                {{ field }}
+
+                {% if field.help_text %}
+                  <div class="form-text">{{ field.help_text }}</div>
+                {% endif %}
+
+                {% if field.errors %}
+                  <div class="text-danger small mt-1">
+                    {% for err in field.errors %}
+                      <div>{{ err }}</div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% empty %}
+              {# If the view passed no form fields, show a fallback message (unlikely) #}
+              <p class="text-muted">Nenhum campo para exibir.</p>
+            {% endfor %}
+
+            <div class="d-flex gap-2">
+              {% if delete %}
+                <button type="submit" class="btn btn-danger">Excluir minha conta</button>
+                <a href="{% url 'account_edit_profile' %}" class="btn btn-outline-secondary">Cancelar</a>
+
+              {% elif edit_avatar %}
+                <button type="submit" class="btn btn-primary">Atualizar avatar</button>
+                <a href="{% url 'account_edit_profile' %}" class="btn btn-outline-secondary">Voltar</a>
+
+              {% elif edit_profile %}
+                <button type="submit" class="btn btn-success">Salvar alterações</button>
+                <a href="{% url 'account_detail_self' %}" class="btn btn-outline-secondary">Cancelar</a>
+
+              {% else %}
+                <button type="submit" class="btn btn-primary">Enviar</button>
+                <a href="{% url 'account_edit_profile' %}" class="btn btn-outline-secondary">Voltar</a>
+              {% endif %}
+            </div>
+          </form>
+
+        </div> {# card-body #}
+      </div> {# card #}
+
+    </div>
+  </div>
+</div>
+
+{# Optional: Bootstrap Icons CDN for icons used above #}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.js"></script>
+{% endblock %}
