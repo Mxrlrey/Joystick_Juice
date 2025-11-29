@@ -76,10 +76,24 @@
                 </form>
 
                 <!-- Review (Botão Estático) -->
-                <button class="action-btn review-btn" disabled>
-                    <i class="fa-solid fa-star"></i>
-                    <span>Fazer Review</span>
-                </button>
+                {% if request.user.is_authenticated and review_exists %}
+    <button class="action-btn review-btn" onclick="window.location.href='{% url 'detail_review' user_review.pk %}'">
+        <i class="fa-solid fa-eye"></i>
+        <span>Ver Sua Review</span>
+    </button>
+{% else %}
+    <button class="action-btn review-btn" onclick="window.location.href='{% url 'create_review' game.pk %}'">
+        <i class="fa-solid fa-star"></i>
+        <span>Fazer Review</span>
+    </button>
+{% endif %}
+
+
+<button class="action-btn review-btn"
+        onclick="window.location.href='{% url 'list_reviews' game.pk %}'">
+    <i class="fa-solid fa-star"></i>
+    <span>Ver Reviews</span>
+</button>
             </div>
 
             <!-- LISTA -->

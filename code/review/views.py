@@ -11,23 +11,23 @@ def create_review(request, game_id):
 
     game = get_object_or_404(Game, pk=game_id)
 
+    # ---------- PROCESSAMENTO NORMAL ----------
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
-            if Review.objects.filter(user=request.user, game=game).exists():
-                messages.error(request, "Você já avaliou este jogo.")
-                return redirect('detail_review', pk=Review.objects.get(user=request.user, game=game).pk)
             review = form.save(commit=False)
             review.user = request.user
             review.game = game
             review.save()
             messages.success(request, "Avaliação criada com sucesso.")
-            return redirect('game_detail', game_id=game.pk) #consertar depois para mostrar a página de detalhes do jogo quando estiver pronta
+            return redirect('game_detail', game.pk)
     else:
         form = ReviewForm()
 
     return render(request, "review/form.html", {
-    "form": form,
+        "form": form,
+        "game": game,
+        "review": None
     })
 
 
@@ -35,7 +35,7 @@ def list_reviews(request, game_id):
     game = get_object_or_404(Game, id=game_id)
     reviews = Review.objects.filter(game=game).order_by('-created_at')
 
-    return render(request, 'review/list_reviews.html', {
+    return render(request, 'review/list.html', {
         'game': game,
         'reviews': reviews
     })

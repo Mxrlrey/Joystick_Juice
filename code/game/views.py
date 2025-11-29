@@ -8,6 +8,8 @@ from django.contrib import messages
 from game.models import Game, UserGameList
 from joystickjuice.utils import STATUS_CHOICES
 from game.forms import GameStatusForm
+from review.models import Review
+from django.db.models import Avg, Count
 
 User = get_user_model()
 
@@ -129,6 +131,7 @@ def game_detail(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
     user = request.user
 
+    # --- estado do usuário relativo ao jogo (lista, favorito, like) ---
     in_list = False
     user_status = None
     is_favorite = False
@@ -145,19 +148,37 @@ def game_detail(request, game_id):
         is_favorite = user in game.favorites.all()
         is_liked = user in game.likes.all()
 
-        # Criar o form com o status inicial do usuário
+        # Criar o form com o status inicial do usuário (se existir)
         status_form = GameStatusForm(initial={'status': user_status})
     else:
         status_form = None
 
+    # --- reviews: lista, média e contagem ---
+    reviews_qs = Review.objects.filter(game=game).select_related('user').order_by('-created_at')
+    reviews_count = reviews_qs.count()
+    avg_rating = reviews_qs.aggregate(avg=Avg('rating'))['avg'] or 0
+
+    # --- review do usuário logado (se houver) ---
+    user_review = None
+    review_exists = False
+    if user.is_authenticated:
+        user_review = reviews_qs.filter(user=user).first()
+        review_exists = user_review is not None
+
     context = {
-        "game": game,
-        "in_list": in_list,
-        "user_status": user_status,
-        "is_favorite": is_favorite,
-        "is_liked": is_liked,
-        "status_form": status_form,
-    }
+    "game": game,
+    "in_list": in_list,
+    "user_status": user_status,
+    "is_favorite": is_favorite,
+    "is_liked": is_liked,
+    "status_form": status_form,
+
+    # Novos dados da review
+    "avg_rating": avg_rating,
+    "reviews_count": reviews_count,
+    "review_exists": review_exists,
+    "user_review": user_review,
+}
 
     return render(request, "game/detail.html", context)
 

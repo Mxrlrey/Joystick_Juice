@@ -13,74 +13,89 @@
 {% endblock %}
 
 {% block content %}
+<div class="row justify-content-center mt-4">
+  <div class="col-lg-6 col-md-8">
 
-<div class="row justify-content-center">
-  <div class="col-lg-6">
-
-    <div class="card shadow mb-4">
-
-      <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">
-
+    <div class="card shadow-lg border-0 rounded-3">
+      
+      <div class="card-header bg-primary text-white py-3 rounded-top">
+        <h5 class="m-0 fw-bold">
           {% if request.resolver_match.url_name == "create_review" %}
             <i class="fas fa-star"></i> Criar Avaliação
-
           {% elif request.resolver_match.url_name == "edit_review" %}
             <i class="fas fa-edit"></i> Editar Avaliação
-
           {% elif request.resolver_match.url_name == "delete_review" %}
             <i class="fas fa-trash"></i> Excluir Avaliação
-
           {% else %}
             Avaliação
           {% endif %}
-
-        </h6>
+        </h5>
       </div>
 
-      <div class="card-body">
+      <div class="card-body p-4">
 
-        <form action="" method="post">
+        <form method="post">
           {% csrf_token %}
 
+          {# ---------- CREATE / EDIT ---------- #}
           {% if request.resolver_match.url_name != "delete_review" %}
-            {{ form.as_p }}
+            <div class="mb-3">
+              {{ form.as_p }}
+            </div>
           {% endif %}
 
+          {# ---------- DELETE ---------- #}
           {% if request.resolver_match.url_name == "delete_review" %}
-            <p class="text-danger mt-2">
-              Tem certeza que deseja excluir esta avaliação?
-            </p>
-
-            <div class="d-flex justify-content-between mt-3">
-              <button type="submit" class="btn btn-danger">
-                <i class="fas fa-trash"></i> Confirmar Exclusão
-              </button>
-
-              <a href="{% url 'detail_review' review.pk %}" class="btn btn-secondary">
-                Cancelar
-              </a>
+            
+            <div class="alert alert-danger">
+              <h6 class="fw-bold">
+                <i class="fas fa-exclamation-triangle"></i>
+                Tem certeza que deseja excluir esta avaliação?
+              </h6>
+              <p><strong>Jogo:</strong> {{ review.game.title }}</p>
+              <p><strong>Comentário:</strong> {{ review.comment }}</p>
             </div>
 
-          {% else %}
-
-            <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save"></i> Salvar
-            </button>
-
-            <a href="{% url 'detail_review' review.pk %}" class="btn btn-secondary">
-              Cancelar
-            </a>
-
           {% endif %}
 
+          <div class="d-flex justify-content-between align-items-center mt-4">
+
+            {# Botão principal #}
+            {% if request.resolver_match.url_name == "delete_review" %}
+              <button type="submit" class="btn btn-danger px-4">
+                <i class="fas fa-trash"></i> Excluir
+              </button>
+            {% else %}
+              <button type="submit" class="btn btn-primary px-4">
+                <i class="fas fa-save"></i> Salvar
+              </button>
+            {% endif %}
+
+            {# BOTÃO CANCELAR — usa REFERER quando possível #}
+            {% with prev=request.META.HTTP_REFERER %}
+              {% if prev %}
+                <a href="{{ prev }}" class="btn btn-outline-secondary px-4">
+                  <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+              {% else %}
+                {% if request.resolver_match.url_name == "create_review" %}
+                  <a href="{% url 'game_detail' game.pk %}" class="btn btn-outline-secondary px-4">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                  </a>
+                {% else %}
+                  <a href="{% url 'detail_review' review.pk %}" class="btn btn-outline-secondary px-4">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                  </a>
+                {% endif %}
+              {% endif %}
+            {% endwith %}
+
+          </div>
         </form>
 
       </div>
-
     </div>
 
   </div>
 </div>
-
 {% endblock %}
