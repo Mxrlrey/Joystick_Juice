@@ -1,0 +1,132 @@
+:root{
+    /* Cores do tema (único lugar para alterar cores do site) */
+    --bg: rgb(2, 2, 10);
+    --deep: rgb(0, 0, 18);
+    --panel: rgba(255,255,255,0.06);
+    --soft: rgba(255,255,255,0.12);
+    --glass: rgba(255,255,255,0.03);
+    --text: #ffffff;
+    --muted: #b8c2cc;
+    --accent: #F17A0D;
+    --accent-2: #ff9a45;            /* segundo tom para gradiente */
+    --accent-soft: rgba(241,122,13,0.65);
+    --btn-bg: rgba(255,255,255,0.08);
+    --radius: 2px;
+
+    /* util */
+    --focus-shadow: 0 0 0 0.2rem rgba(241,122,13,0.18);
+}
+
+/* -----------------------------
+   MAPEAMENTO / OVERRIDES DO BOOTSTRAP
+   (Use as classes do bootstrap normalmente: btn-primary, text-primary, bg-primary, etc.)
+   ----------------------------- */
+
+/* --- Botões primários --- */
+.btn-primary {
+    background: linear-gradient(45deg, var(--accent), var(--accent-2));
+    border-color: var(--accent);
+    color: var(--deep);
+    border-radius: var(--radius);
+    box-shadow: none;
+    transition: all .24s ease;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    box-shadow: 0 6px 18px rgba(241,122,13,0.18);
+    color: var(--deep);
+}
+
+/* --- Botão outline primário --- */
+.btn-outline-primary {
+    color: var(--accent) !important;
+    border-color: var(--accent) !important;
+    background: transparent !important;
+    
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background: var(--accent)!important;
+    color: var(--deep)!important;
+    border-color: var(--accent)!important;
+}
+
+/* --- Botões secundários / light / danger (mantém semântica bootstrap) --- */
+.btn-secondary {
+    background: var(--btn-bg);
+    color: var(--text);
+    border-color: var(--soft);
+    border-radius: var(--radius);
+}
+.btn-light {
+    background: var(--btn-bg);
+    color: var(--text);
+}
+.btn-danger {
+    border-radius: var(--radius);
+}
+
+/* --- Textos / backgrounds --- */
+.text-primary { color: var(--accent) !important; }
+.bg-primary { background: var(--accent) !important; color: var(--deep) !important; }
+.border-primary { border-color: var(--accent) !important; }
+
+/* Links primários */
+a.text-primary, .link-primary { color: var(--accent); }
+a.text-primary:hover, .link-primary:hover { color: var(--accent-2); text-decoration: underline; }
+
+/* --- Formularios (usar as classes form-control/form-select do bootstrap) --- */
+.form-control,
+.form-select {
+    background: var(--deep);
+    border: 1px solid var(--soft);
+    color: var(--text);
+    border-radius: 8px;
+    transition: box-shadow .18s ease, border-color .18s ease;
+}
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent);
+    box-shadow: var(--focus-shadow);
+    outline: none;
+    background: var(--deep);
+}
+
+/* --- Navbar (mapeia estilos que você já tem) --- */
+.navbar {
+    background: var(--deep) !important;
+    border-bottom: 1px solid var(--soft);
+    color: var(--text);
+}
+.navbar .nav-link {
+    color: var(--text) !important;
+}
+.navbar .nav-link:hover {
+    color: var(--accent) !important;
+}
+
+/* --- Badges / Alerts --- */
+.badge-primary {
+    background: var(--accent);
+    color: var(--deep);
+}
+.alert-primary {
+    background: rgba(241,122,13,0.06);
+    border-color: rgba(241,122,13,0.18);
+    color: var(--accent);
+}
+
+/* --- Components utilitários do BS que frequentemente controlam cor --- */
+.bg-light, .bg-white { background: var(--panel) !important; color: var(--text) !important; }
+.text-muted { color: var(--muted) !important; }
+
+/* --- Pequenas melhorias de foco acessível --- */
+.btn:focus, .form-control:focus, .form-select:focus {
+    outline: none;
+}
+
+.theme-accent { color: var(--accent) !important; }
+.theme-accent-bg { background: var(--accent) !important; color: var(--deep) !important; }
+
+

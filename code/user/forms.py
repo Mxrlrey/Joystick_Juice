@@ -4,11 +4,26 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import Person
 
+
 class SignupForm(forms.Form):
-    username = forms.CharField(label="Nome de usuário", max_length=20)
-    email = forms.EmailField(label="Email")
-    password = forms.CharField(label="Senha", widget=forms.PasswordInput)
-    password2 = forms.CharField(label="Confirmar senha", widget=forms.PasswordInput)
+    # Aplicando o widget para adicionar a classe 'form-control'
+    username = forms.CharField(
+        label="Nome de usuário",
+        max_length=20,
+        widget=forms.TextInput(attrs={'class': 'form-control'}) 
+    )
+    email = forms.EmailField(
+        label="Email",
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    password = forms.CharField(
+        label="Senha",
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
+    password2 = forms.CharField(
+        label="Confirmar senha",
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -44,6 +59,13 @@ class PersonForm(forms.ModelForm):
     class Meta:
         model = Person
         fields = ['name', 'birthdate', 'gender', 'bio']
+        # Usando 'widgets' para aplicar a classe 'form-control' aos campos do ModelForm
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'birthdate': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}), # type='date' para melhor UX em navegadores
+            'gender': forms.Select(attrs={'class': 'form-control'}),
+            'bio': forms.Textarea(attrs={'class': 'form-control'}),
+        }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -55,19 +77,28 @@ class PersonForm(forms.ModelForm):
 
         return cleaned_data
 
+
 class AvatarForm(forms.ModelForm):
 
     class Meta:
         model = Person
         fields = ['avatar_url']
+        # Aplicando a classe 'form-control' via 'widgets'
+        widgets = {
+            'avatar_url': forms.URLInput(attrs={'class': 'form-control'}),
+        }
+
 
 class UserDeleteForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email']  
+        # NOTA: O 'form-control' será aplicado no __init__ desta classe
+        # (onde os campos também são desabilitados).
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # O loop aplica 'disabled = True' E 'class = form-control'
         for field in self.fields.values():
             field.disabled = True
-            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['class'] = 'form-control' # Aplica 'form-control' aqui

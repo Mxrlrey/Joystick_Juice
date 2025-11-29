@@ -1,0 +1,281 @@
+/* =======================================
+   VARIÁVEIS DE COR REVERTIDAS
+======================================= */
+:root {
+    --diagonal-bg: var(--deep); /* regra local específica do layout (opcional) */
+}
+
+/* =======================================
+   LAYOUT INVERTIDO E DIAGONAL (Formulário Sem Card)
+======================================= */
+.modern-form-page {
+    background: var(--bg);
+    min-height: 100vh;
+    margin: 0;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    display: flex;
+}
+
+.modern-container {
+    display: grid;
+    grid-template-columns: 60% 40%; 
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Lado Esquerdo - Formulário */
+.form-section {
+    padding: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background-color: var(--diagonal-bg);
+    clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%); 
+}
+
+.form-card {
+    background: transparent; 
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    
+    padding: 2.5rem 3rem;
+    width: 100%;
+    max-width: 550px;
+    margin: 0; 
+}
+
+/* -------------------------------------- */
+/* Lado Direito - Branding (Logo e Texto Lado a Lado) */
+/* -------------------------------------- */
+.brand-section {
+    background: var(--bg);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    position: relative;
+    padding-top: 5rem; 
+}
+
+.brand-content {
+    text-align: left; 
+    position: relative;
+    z-index: 2;
+    max-width: 400px; /* Aumentado ligeiramente para acomodar a largura horizontal */
+    margin: 0; 
+}
+
+/* Novo estilo para agrupar logo e nome */
+.brand-identity {
+    display: flex; /* Flexbox para alinhar itens lado a lado */
+    align-items: center; /* Alinha verticalmente no centro */
+    gap: 0.5rem; /* Espaçamento entre a logo e o texto */
+    margin-bottom: 1.5rem; /* Espaçamento entre a identidade e a tagline */
+}
+
+.logo-img {
+    height: 200px; /* Altura da logo ajustada */
+    width: auto;
+}
+
+.brand-name {
+    font-weight: 700;
+    font-size: 4.5rem; /* Tamanho do nome da marca */
+    line-height: 1.1;
+    margin: 0;
+    color: var(--accent);   
+}
+
+
+/* =======================================
+   ESTILOS DO FORMULÁRIO (Mantidos)
+======================================= */
+.form-header {
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.form-title {
+    color: var(--text);
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.form-subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 400;
+}
+
+.form-fields {
+    display: grid;
+    gap: 1.2rem;
+}
+
+.form-label {
+    display: block;
+    color: var(--text);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.required {
+    color: var(--accent);
+    margin-left: 2px;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.form-control, .form-select {
+    background: var(--deep) !important;
+    border: 1px solid var(--soft) !important;
+    color: var(--text) !important;
+    border-radius: 8px !important; 
+    padding: 0.8rem 1rem !important;
+    width: 100% !important;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 1px var(--accent) !important;
+    outline: none;
+}
+
+
+.error-message {
+    color: var(--accent);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.help-text {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    line-height: 1.4;
+}
+
+.non-field-errors {
+    background: rgba(241, 122, 13, 0.1);
+    border: 1px solid rgba(241, 122, 13, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-actions {
+    margin-top: 2rem;
+}
+
+.btn-submit {
+    width: 100%;
+    background: var(--accent); 
+    border: none;
+    color: var(--deep);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.btn-submit:hover {
+    opacity: 0.9;
+    transform: none;
+    box-shadow: none;
+}
+
+.form-footer-links {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--soft);
+}
+
+.skip-link {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+}
+
+.skip-link:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+/* =======================================
+   RESPONSIVIDADE (Ajustada)
+======================================= */
+@media (max-width: 992px) {
+    .modern-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .form-section {
+        clip-path: none; 
+        background-color: var(--diagonal-bg);
+        justify-content: center;
+        padding: 3rem 1.5rem;
+    }
+    
+    .form-card {
+        max-width: 450px;
+        margin: 0;
+        padding: 2rem 1.5rem;
+        transform: none;
+    }
+
+    .brand-section {
+        justify-content: center;
+        text-align: center;
+        min-height: 150px;
+        background: var(--bg);
+        padding-top: 2rem; 
+    }
+
+    .brand-content {
+        margin: 0; 
+        max-width: 100%;
+    }
+
+    /* Ajuste para o mobile: logo e nome da marca um abaixo do outro */
+    .brand-identity {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .logo-img {
+        height: 60px;
+    }
+
+    .brand-name {
+        font-size: 2.2rem;
+    }
+    
+}
+
+@media (max-width: 576px) {
+    .form-card {
+        padding: 1.5rem 1rem;
+    }
+    .brand-name {
+        font-size: 2rem;
+    }
+}
