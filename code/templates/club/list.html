@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Clubes Disponíveis</h1>
+<a href="{% url 'create_club' %}">Criar Novo Clube</a>
+<hr>
+<ul>
+{% for club in clubs %}
+    <li>
+        <strong>{{ club.name }}</strong> - {{ club.description }}<br>
+        Criador: {{ club.creator.username }} | Membros: {{ club.members.count }}<br>
+
+        <a href="{% url 'club_detail' club.id %}">Ver detalhes</a>
+
+        {% if request.user == club.creator %}
+            | <a href="{% url 'edit_club' club.id %}">Editar</a>
+            | <a href="{% url 'delete_club' club.id %}">Excluir</a>
+        {% elif request.user not in club.members.all %}
+            | <a href="{% url 'join_club' club.id %}">Entrar</a>
+        {% endif %}
+    </li>
+{% empty %}
+    <li>Nenhum clube cadastrado.</li>
+{% endfor %}
+</ul>
+{% endblock %}

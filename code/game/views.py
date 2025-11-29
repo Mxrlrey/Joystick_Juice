@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from game.models import Game, UserGameList
 from joystickjuice.utils import STATUS_CHOICES
-from game.forms import GameStatusForm
+from game.forms import GameStatusForm, GameForm
 from review.models import Review
 from django.db.models import Avg, Count
 
@@ -28,6 +28,7 @@ def get_igdb_token():
     resp.raise_for_status()
     return resp.json()["access_token"]
 
+# Add
 def fetch_and_save(request):
     """Busca jogo na IGDB e salva no banco"""
     if request.method == "POST":
@@ -99,7 +100,6 @@ def fetch_and_save(request):
             if "videos" in game_data and game_data["videos"]:
                 try:
                     video_id = game_data["videos"][0]["video_id"]
-                    # Adiciona parâmetros de embed que melhoram compatibilidade
                     trailer_url = f"https://www.youtube.com/embed/{video_id}?rel=0&modestbranding=1&enablejsapi=1"
                 except (TypeError, KeyError):
                     trailer_url = ""
@@ -121,17 +121,85 @@ def fetch_and_save(request):
 
     return render(request, "game/fill.html")
 
-# Listagem de jogos
+# Read
 def list_games(request):
+    query = request.GET.get("q", "").strip()
     games = Game.objects.all()
-    return render(request, "game/list.html", {"games": games})
 
-# Detalhe do jogo
+    if query:
+        filtered_games = games.filter(title__icontains=query)
+    else:
+        filtered_games = games
+
+    show_create_button = query and not filtered_games.exists()
+
+    context = {
+        "games": filtered_games,
+        "query": query,
+        "show_create_button": show_create_button,
+    }
+
+    return render(request, "game/list.html", context)
+
+#Create
+@login_required
+def create_game(request):
+    if request.method == "POST":
+        form = GameForm(request.POST)
+        if form.is_valid():
+            game = form.save()
+            messages.success(request, f"Jogo '{game.title}' criado com sucesso!")
+            return redirect("list_game")
+    else:
+        form = GameForm()
+
+    return render(request, "game/form.html", {
+        "form": form,
+        "game": None,
+        "action": "create"
+    })
+
+#Update
+@login_required
+def edit_game(request, pk):
+    game = get_object_or_404(Game, pk=pk)
+
+    if request.method == "POST":
+        form = GameForm(request.POST, instance=game)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Jogo '{game.title}' atualizado com sucesso!")
+            return redirect("list_game")
+    else:
+        form = GameForm(instance=game)
+
+    return render(request, "game/form.html", {
+        "form": form,
+        "game": game,
+        "action": "edit"
+    })
+
+#Delete
+@login_required
+def delete_game(request, pk):
+    game = get_object_or_404(Game, pk=pk)
+
+    if request.method == "POST":
+        title = game.title
+        game.delete()
+        messages.success(request, f"Jogo '{title}' removido com sucesso!")
+        return redirect("list_game")
+
+    return render(request, "game/form.html", {
+        "game": game,
+        "action": "delete"
+    })
+
+# Detail
 def game_detail(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
     user = request.user
 
-    # --- estado do usuário relativo ao jogo (lista, favorito, like) ---
     in_list = False
     user_status = None
     is_favorite = False
@@ -148,17 +216,14 @@ def game_detail(request, game_id):
         is_favorite = user in game.favorites.all()
         is_liked = user in game.likes.all()
 
-        # Criar o form com o status inicial do usuário (se existir)
         status_form = GameStatusForm(initial={'status': user_status})
     else:
         status_form = None
 
-    # --- reviews: lista, média e contagem ---
     reviews_qs = Review.objects.filter(game=game).select_related('user').order_by('-created_at')
     reviews_count = reviews_qs.count()
     avg_rating = reviews_qs.aggregate(avg=Avg('rating'))['avg'] or 0
 
-    # --- review do usuário logado (se houver) ---
     user_review = None
     review_exists = False
     if user.is_authenticated:
@@ -172,8 +237,6 @@ def game_detail(request, game_id):
     "is_favorite": is_favorite,
     "is_liked": is_liked,
     "status_form": status_form,
-
-    # Novos dados da review
     "avg_rating": avg_rating,
     "reviews_count": reviews_count,
     "review_exists": review_exists,
@@ -182,10 +245,9 @@ def game_detail(request, game_id):
 
     return render(request, "game/detail.html", context)
 
-# Lista de jogos do usuário (manual, sem CBV)
+# User Game List
 @login_required
 def user_game_list(request, pk=None):
-
     if pk:
         user_profile = get_object_or_404(User, pk=pk)
     else:
@@ -203,7 +265,7 @@ def user_game_list(request, pk=None):
     }
     return render(request, "games/user_game_list.html", context)
 
-# Adicionar / atualizar / remover jogos da lista do usuário
+# Add to List
 @login_required
 def add_to_list(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
@@ -218,7 +280,7 @@ def add_to_list(request, game_id):
         messages.success(request, f"'{game.title}' adicionado à sua lista (Para jogar).")
     return redirect(request.META.get("HTTP_REFERER", "/"))
 
-
+# Update Game Status
 @login_required
 def update_game_status(request, game_id):
     if request.method == "POST":
@@ -241,7 +303,7 @@ def update_game_status(request, game_id):
 
     return redirect(request.META.get("HTTP_REFERER", "/"))
 
-
+# Remove from List
 @login_required
 def remove_from_list(request, game_id):
     user = request.user
@@ -253,6 +315,7 @@ def remove_from_list(request, game_id):
         messages.info(request, "Jogo não estava na sua lista.")
     return redirect(request.META.get("HTTP_REFERER", "/"))
 
+# Toggle Favorite
 @login_required
 def toggle_favorite(request, game_id):
     user = request.user
@@ -267,6 +330,7 @@ def toggle_favorite(request, game_id):
 
     return redirect(request.META.get("HTTP_REFERER", "/"))
 
+# Toggle Like
 @login_required
 def toggle_like(request, game_id):
     user = request.user
@@ -280,7 +344,3 @@ def toggle_like(request, game_id):
         messages.success(request, f"Você curtiu '{game.title}'!")
 
     return redirect(request.META.get("HTTP_REFERER", "/"))
-
-
-
-

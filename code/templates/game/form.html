@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>
+{% if action == 'create' %}Criar Jogo{% elif action == 'edit' %}Editar Jogo{% elif action == 'delete' %}Excluir Jogo{% endif %}
+</h1>
+
+<form method="POST">
+    {% csrf_token %}
+
+    {% if action == 'create' or action == 'edit' %}
+        {{ form.as_p }}
+        <button type="submit">
+            {% if action == 'create' %}Criar{% else %}Salvar Alterações{% endif %}
+        </button>
+    {% elif action == 'delete' %}
+        <p>Tem certeza que deseja excluir o jogo "<strong>{{ game.title }}</strong>"?</p>
+        <button type="submit">Confirmar Exclusão</button>
+    {% endif %}
+</form>
+
+<a href="{% url 'list_game' %}">Voltar à lista de jogos</a>
+
+{% endblock %}

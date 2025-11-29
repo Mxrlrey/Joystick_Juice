@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>
+{% if action == 'create' %}Criar Clube{% elif action == 'edit' %}Editar Clube{% elif action == 'delete' %}Excluir Clube{% endif %}
+</h1>
+
+<form method="POST">
+    {% csrf_token %}
+
+    {% if action == 'create' or action == 'edit' %}
+        {{ form.as_p }}
+        <button type="submit">
+            {% if action == 'create' %}Criar{% else %}Salvar Alterações{% endif %}
+        </button>
+    {% elif action == 'delete' %}
+        <p>Tem certeza que deseja excluir o clube "<strong>{{ club.name }}</strong>"?</p>
+        <button type="submit">Confirmar Exclusão</button>
+    {% endif %}
+</form>
+
+<a href="{% url 'list_clubs' %}">Voltar à lista de clubes</a>
+
+{% endblock %}

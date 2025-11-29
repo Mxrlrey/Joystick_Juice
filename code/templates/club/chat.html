@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Chat do Clube: {{ club.name }}</h1>
+<p><a href="{% url 'club_detail' club.id %}">Voltar para detalhes do clube</a></p>
+
+<hr>
+
+<h3>Mensagens</h3>
+<div style="max-height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
+    {% for message in messages_list %}
+        <p><strong>{{ message.sender.username }}</strong> {% if message.game %} (jogo: {{ message.game.title }}) {% endif %}: {{ message.content }}</p>
+    {% empty %}
+        <p>Nenhuma mensagem ainda.</p>
+    {% endfor %}
+</div>
+
+<hr>
+
+<h3>Enviar Mensagem</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enviar</button>
+</form>
+{% endblock %}

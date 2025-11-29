@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'user',
     'game',
     'review',
+    'club',
 ]
 
 MIDDLEWARE = [

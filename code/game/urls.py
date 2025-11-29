@@ -11,4 +11,7 @@ urlpatterns = [
     path('game/remove/<int:game_id>/', views.remove_from_list, name='remove_from_list'),
     path("game/<int:game_id>/favorite/", views.toggle_favorite, name="toggle_favorite"),
     path("game/<int:game_id>/like/", views.toggle_like, name="toggle_like"),
+    path('form/add/', views.create_game, name='create_game'),
+    path('form/edit/<int:pk>/', views.edit_game, name='edit_game'),
+    path('form/delete/<int:pk>/', views.delete_game, name='delete_game'),
 ]

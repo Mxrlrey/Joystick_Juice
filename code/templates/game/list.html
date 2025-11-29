@@ -1,31 +1,68 @@
 {% load static %}
 
-{% block title %}Joystick Juice{% endblock %}
+{% block title %}Joystick Juice - Gerenciar Jogos{% endblock %}
 
 {% block content %}
-  <h1>Jogos Cadastrados</h1>
-  <div class="game-list">
-    {% if games %}
-      {% for jogo in games %}
-      <div class="game-card">
-        {% if jogo.cover_url %}
-          <img src="{{ jogo.cover_url }}" alt="{{ jogo.title }} capa" />
-        {% else %}
-          <div class="no-image">
-            Sem imagem
-          </div>
-        {% endif %}
-        <div class="game-info">
-          <p class="game-title">{{ jogo.title }}</p>
-          <p class="game-genre"><strong>Gênero:</strong> {{ jogo.genre|default:"Indefinido" }}</p>
-          <p class="game-release"><strong>Lançamento:</strong> {{ jogo.release_date|date:"d/m/Y" }}</p>
-          <p class="game-developer"><strong>Desenvolvedor:</strong> {{ jogo.developer|default:"Desconhecido" }}</p>
-          <p class="game-synopsis">{{ jogo.synopsis|default:"Sem descrição." }}</p>
-        </div>
-      </div>
-      {% endfor %}
-    {% else %}
-      <p>Nenhum jogo cadastrado ainda.</p>
+<h1>Gerenciar Jogos</h1>
+
+<form method="get" action="{% url 'list_game' %}" style="display:flex; gap:10px; align-items:center; margin-bottom:20px;">
+    <input type="text" name="q" placeholder="Pesquisar por nome..." value="{{ request.GET.q }}">
+    <button type="submit">Filtrar</button>
+
+    <!-- Botões de ação (desabilitados até selecionar um jogo) -->
+    <button type="button" id="edit-btn" disabled>Editar</button>
+    <button type="button" id="delete-btn" disabled>Excluir</button>
+    {% if show_create_button %}
+        <a href="{% url 'add_game' %}?title={{ query }}" class="btn btn-primary">
+            Cadastrar Jogo
+        </a>
     {% endif %}
-  </div>
+</form>
+
+<div class="game-list">
+    {% for jogo in games %}
+        {% if not request.GET.q or request.GET.q|lower in jogo.title|lower %}
+        <div class="game-card">
+            <input type="radio" name="selected_game" value="{{ jogo.id }}" class="select-game">
+            {% if jogo.cover_url %}
+                <img src="{{ jogo.cover_url }}" alt="{{ jogo.title }} capa">
+            {% else %}
+                <div class="no-image">Sem imagem</div>
+            {% endif %}
+            <div class="game-info">
+                <p class="game-title">{{ jogo.title }}</p>
+                <p class="game-genre"><strong>Gênero:</strong> {{ jogo.genre|default:"Indefinido" }}</p>
+                <p class="game-release"><strong>Lançamento:</strong> {{ jogo.release_date|date:"d/m/Y" }}</p>
+                <p class="game-developer"><strong>Desenvolvedor:</strong> {{ jogo.developer|default:"Desconhecido" }}</p>
+            </div>
+        </div>
+        {% endif %}
+    {% empty %}
+        <p>Nenhum jogo cadastrado ainda.</p>
+    {% endfor %}
+</div>
+
+<script>
+    const radios = document.querySelectorAll('.select-game');
+    const editBtn = document.getElementById('edit-btn');
+    const deleteBtn = document.getElementById('delete-btn');
+
+    radios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            const selectedId = radio.value;
+
+            editBtn.disabled = false;
+            deleteBtn.disabled = false;
+
+            // Atualiza os links dinamicamente
+            editBtn.onclick = () => {
+                window.location.href = "{% url 'edit_game' 0 %}".replace("/0/", `/${selectedId}/`);
+            };
+            deleteBtn.onclick = () => {
+                window.location.href = "{% url 'delete_game' 0 %}".replace("/0/", `/${selectedId}/`);
+            };
+        });
+    });
+</script>
+
 {% endblock %}

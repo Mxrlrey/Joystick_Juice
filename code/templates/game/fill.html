@@ -11,9 +11,15 @@
         {% csrf_token %}
         <label for="nome">Nome do jogo:</label>
         <input type="text" id="nome" name="nome" required>
-
         <button type="submit">Adicionar</button>
     </form>
+
+    <hr>
+
+    <p>Seu jogo não está aqui? Cadastre manualmente:</p>
+    <a href="{% url 'create_game' %}">
+        <button type="button">Cadastrar Manualmente</button>
+    </a>
 
     {% if messages %}
         <ul>
