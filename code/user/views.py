@@ -22,26 +22,21 @@ def list_(request):
     return render(request, 'account/index.html', {'users' : users})
 
 @login_required
-def detail_self(request):
-    user = request.user
+def detail(request, user_id=None):
 
-    try:
-        person = user.person
-    except Exception:
-        person = None
-    
-    return render(request, 'account/detail.html', {'person': person, 'user_obj': user, 'is_owner': True})
+    if user_id is None:
+        user_obj = request.user
+    else:
+        user_obj = get_object_or_404(User, pk=user_id)
 
-@login_required
-def detail_admin(request, user_id):
-    user_obj = get_object_or_404(User, pk=user_id)
     try:
         person = user_obj.person
     except Exception:
         person = None
 
-    is_owner = (request.user == user_obj)
-    return render(request, 'account/detail.html', {'person': person, 'user_obj': user_obj, 'is_owner': is_owner, 'admin_view': True})
+    is_owner = request.user.is_authenticated and (request.user.pk == user_obj.pk)
+
+    return render(request, 'account/detail.html', { 'person': person, 'user_obj': user_obj, 'is_owner': is_owner})
 
 @login_required
 def delete(request):

@@ -1,46 +1,344 @@
-:root {
-  --bg: rgb(0, 0, 22); /* Fundo muito escuro (Deep Blue) */
-  --paper: #FFF4E6; /* Cor principal clara (Quase branco/creme) */
-  --accent: #F17A0D; /* Laranja Vívido (Destaque) */
-  --deep: #021E34; /* Azul mais escuro (Para elementos de navegação/rodapé) */
-  --glass: rgba(255, 244, 230, 0.04); /* Fundo transparente/glassmorphism */
-  --error-red: #e74c3c; /* Vermelho de erro */
+/* ============================
+   VARIÁVEIS DE TEMA GLOBAL
+============================= */
+:root{
+    --bg: rgb(2, 2, 10);
+    --deep: rgb(0, 0, 18);
+    --panel: rgba(255,255,255,0.06);
+    --soft: rgba(255,255,255,0.12);
+    --glass: rgba(255,255,255,0.03);
+    --text: #ffffff;
+    --muted: #b8c2cc;
+    --accent: #F17A0D;
+    --accent-soft: rgba(241, 122, 13, 0.65);
+    --btn-bg: rgba(255,255,255,0.08);
+    --radius: 14px;
 }
 
-/* 1. Cores de Fundo da Aplicação */
-body {
-  background-color: var(--bg);
-  color: var(--paper); /* Define a cor padrão do texto como a cor clara */
+/* ============================
+   RESET / GLOBAL
+============================= */
+body{
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    min-height: 100vh;
 }
 
-/* 2. Cores da Navbar e Footer (Usando --deep) */
-.navbar, .footer {
-  background-color: var(--deep) !important;
-  color: var(--paper) !important;
-  border-bottom: 2px solid var(--accent); /* Um toque da cor de destaque */
+h1, h2, h3, h4, h5, h6, p, span{
+    color: var(--text);
 }
 
-/* 3. Destaque (Accent) para Botões e Links Principais */
-.btn-primary, .bg-primary {
-  background-color: var(--accent) !important;
-  border-color: var(--accent) !important;
-  color: var(--deep) !important; /* Texto escuro em botões de destaque */
+hr{
+    border: none;
+    border-bottom: 1px solid var(--soft);
+    margin: 20px 0;
+    opacity: 0.4;
 }
 
-.btn-outline-primary {
-  color: var(--accent) !important;
-  border-color: var(--accent) !important;
+/* ============================
+   NAVBAR PERSONALIZADA
+============================= */
+.custom-navbar {
+    background: var(--deep) !important;
+    border-bottom: 1px solid var(--soft);
+    backdrop-filter: blur(10px);
 }
 
-/* 4. Cores do Texto Principal */
-h1, h2, h3, a {
-  color: var(--paper);
+.navbar-brand .brand-text {
+    font-weight: 700;
+    font-size: 1.4rem;
+    background: linear-gradient(45deg, var(--accent), #ff9a45);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.nav-link {
-  color: var(--paper) !important;
+.navbar-nav .nav-link {
+    color: var(--text) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    transition: all 0.3s ease;
 }
 
-.nav-link:hover {
-  color: var(--accent) !important;
+.navbar-nav .nav-link:hover {
+    background: var(--panel);
+    color: var(--accent) !important;
+}
+
+/* Botões personalizados */
+.btn-custom-outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: var(--radius);
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-custom-outline:hover {
+    background: var(--accent);
+    color: var(--deep);
+    transform: translateY(-2px);
+}
+
+.btn-custom-accent {
+    background: linear-gradient(45deg, var(--accent), #ff9a45);
+    border: none;
+    color: var(--deep);
+    border-radius: var(--radius);
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-custom-accent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(241, 122, 13, 0.4);
+}
+
+.btn-custom-light {
+    background: var(--btn-bg);
+    border: 1px solid var(--soft);
+    color: var(--text);
+    border-radius: var(--radius);
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-custom-light:hover {
+    background: var(--panel);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.btn-custom-danger {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    border: none;
+    color: white;
+    border-radius: var(--radius);
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-custom-danger:hover {
+    background: linear-gradient(45deg, #c82333, #bd2130);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+/* ============================
+   AVATAR E NICKNAME SEPARADOS
+============================= */
+.user-avatar-link {
+    text-decoration: none !important;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.user-avatar-link:hover {
+    transform: scale(1.05);
+}
+
+.user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: border-color 0.3s ease;
+}
+
+.user-avatar-link:hover .user-avatar {
+    border-color: #ff9a45;
+    box-shadow: 0 0 8px rgba(241, 122, 13, 0.6);
+}
+
+.user-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.user-avatar-default {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, var(--accent), #ff9a45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--deep);
+    font-size: 0.9rem;
+}
+
+.user-nickname-link {
+    text-decoration: none !important;
+    padding: 0.5rem 0.8rem;
+    border-radius: var(--radius);
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.user-nickname {
+    color: var(--text);
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+}
+
+.user-nickname-link:hover .user-nickname {
+    color: var(--accent) !important;
+}
+
+/* ============================
+   FOOTER PERSONALIZADO
+============================= */
+.custom-footer {
+    background: var(--deep);
+    border-top: 1px solid var(--soft);
+}
+
+.footer-links a {
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: var(--accent) !important;
+}
+
+/* ============================
+   CONTEÚDO PRINCIPAL
+============================= */
+.main-content {
+    background: var(--bg);
+    flex: 1;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.page-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ============================
+   UTILITÁRIOS
+============================= */
+.glass-effect {
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--soft);
+}
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--soft);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+}
+
+.text-accent {
+    color: var(--accent) !important;
+}
+
+.bg-deep {
+    background: var(--deep) !important;
+}
+
+/* ============================
+   CORREÇÃO DO MENU HAMBURGUER
+============================= */
+@media (max-width: 991.98px) {
+    .navbar-nav.align-items-center {
+        align-items: flex-start !important;
+        padding-top: 1rem;
+    }
+    
+    .user-avatar-link,
+    .user-nickname-link {
+        margin-bottom: 0.5rem;
+    }
+    
+    .navbar-nav .nav-item {
+        margin-bottom: 0.5rem;
+    }
+    
+    .navbar-nav form.d-flex {
+        margin-top: 0.5rem;
+    }
+    
+    /* Alinha os botões de autenticação à esquerda no mobile */
+    .navbar-nav .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+/* ============================
+   RESPONSIVIDADE GERAL
+============================= */
+
+@media (max-width: 991.98px) {
+    .navbar-nav.align-items-center {
+        align-items: flex-start !important;
+        padding-top: 1rem;
+        border-top: 1px solid var(--soft);
+        margin-top: 1rem;
+    }
+    
+    .nav-item.me-3.d-flex {
+        width: 100%;
+        margin-right: 0 !important;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--soft);
+    }
+    
+    .nav-item.me-3.d-flex .user-avatar-link {
+        margin-right: 0.75rem;
+    }
+    
+    .nav-item.me-3.d-flex .user-nickname-link {
+        flex: 1;
+        padding: 0;
+    }
+    
+    .nav-item.me-3.d-flex .user-nickname {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .navbar-nav .nav-item:last-child {
+        width: 100%;
+    }
+    
+    .navbar-nav .nav-item:last-child form {
+        width: 100%;
+    }
+    
+    .navbar-nav .nav-item:last-child .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .navbar-nav .nav-item {
+        margin-bottom: 0.5rem;
+    }
 }

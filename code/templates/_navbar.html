@@ -1,55 +1,73 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top custom-navbar">
     <div class="container">
         
-        {# Nome da Aplicação/Logo #}
-        <a class="navbar-brand text-light" href="/">
-            <span style="color: var(--accent);">🎮</span> Joystick Juice
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="{% static 'img/global/logo.png' %}" alt="Joystick Juice" height="40" class="me-2">
+            <span class="brand-text">Joystick Juice</span>
         </a>
         
-        {# Botão para Mobile (Hamburguer) #}
+        <!-- Botão para Mobile -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         
-        {# Itens de Navegação #}
+        <!-- Itens de Navegação -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
+                    <a class="nav-link" href="#">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Link Exemplo</a>
+                    <a class="nav-link" href="#">Jogos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Minha Biblioteca</a>
                 </li>
             </ul>
 
-            {# Links de Autenticação #}
-            <ul class="navbar-nav">
+            <!-- Links de Autenticação -->
+            <ul class="navbar-nav align-items-center">
                 {% if user.is_authenticated %}
-                    <li class="nav-item me-2">
-                        <a class="nav-link btn btn-outline-primary" href="{% url 'account_edit_profile' %}">
-                            Olá, {{ user.username }}
+                    <li class="nav-item me-3 d-flex align-items-center">
+                        <!-- Link da Foto -->
+                        <a class="user-avatar-link me-2" href="{% url 'account_detail_self' %}">
+                            <div class="user-avatar">
+                                {% if user.person and user.person.avatar_url %}
+                                    <img src="{{ user.person.avatar_url.url }}" alt="{{ user.username }}" class="user-avatar-img">
+                                {% else %}
+                                    <!-- Avatar padrão se não tiver foto ou perfil -->
+                                    <div class="user-avatar-default">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </a>
+                        
+                        <!-- Link do Nickname -->
+                        <a class="user-nickname-link" href="{% url 'account_detail_self' %}">
+                            <span class="user-nickname">{{ user.username }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        {# Form para Logout seguro (Método POST) #}
-                        <form action="{% url 'logout' %}" method="post" class="d-inline">
+                       <form action="{% url 'logout' %}" method="post" class="d-flex align-items-center">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-light">
-                                <i class="bi bi-box-arrow-right"></i> Sair
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="fas fa-sign-out-alt me-1"></i>Sair
                             </button>
                         </form>
                     </li>
                 {% else %}
                     <li class="nav-item me-2">
-                        <a class="nav-link btn btn-outline-primary" href="{% url 'login' %}">
-                            Entrar
+                        <a class="nav-link btn btn-custom-outline" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt me-1"></i>Entrar
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-primary" href="{% url 'signup' %}">
-                            Registrar
+                        <a class="nav-link btn btn-custom-accent" href="{% url 'signup' %}">
+                            <i class="fas fa-user-plus me-1"></i>Registrar
                         </a>
                     </li>
                 {% endif %}
