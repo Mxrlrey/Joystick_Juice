@@ -12,6 +12,21 @@ class Game(models.Model):
     banner_url = models.URLField(max_length=200, blank=True, null=True)
     trailer_url = models.URLField(max_length=200, blank=True, null=True)
 
+    favorites = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="favorite_games",
+        blank=True
+    )
+
+    likes = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="liked_games",
+        blank=True
+    )
+
+    def __str__(self):
+        return self.title
+
 class UserGameList(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
@@ -19,11 +34,3 @@ class UserGameList(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-class FavoriteGame(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    date_added = models.DateField(auto_now_add=True)
-
-class LikeGame(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)

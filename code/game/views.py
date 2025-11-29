@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from game.models import Game, UserGameList
 from joystickjuice.utils import STATUS_CHOICES
+from game.forms import GameStatusForm
 
 User = get_user_model()
 
@@ -128,19 +129,36 @@ def game_detail(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
     user = request.user
 
+    in_list = False
+    user_status = None
+    is_favorite = False
+    is_liked = False
+
     if user.is_authenticated:
         ug = UserGameList.objects.filter(user=user, game=game).first()
-        in_list = ug is not None
-        user_status = ug.status if ug else "P"
+        if ug:
+            in_list = True
+            user_status = ug.status
+        else:
+            user_status = "P"
+
+        is_favorite = user in game.favorites.all()
+        is_liked = user in game.likes.all()
+
+        # Criar o form com o status inicial do usuário
+        status_form = GameStatusForm(initial={'status': user_status})
     else:
-        in_list = False
-        user_status = None
+        status_form = None
 
     context = {
         "game": game,
         "in_list": in_list,
         "user_status": user_status,
+        "is_favorite": is_favorite,
+        "is_liked": is_liked,
+        "status_form": status_form,
     }
+
     return render(request, "game/detail.html", context)
 
 # Lista de jogos do usuário (manual, sem CBV)
@@ -213,3 +231,35 @@ def remove_from_list(request, game_id):
     else:
         messages.info(request, "Jogo não estava na sua lista.")
     return redirect(request.META.get("HTTP_REFERER", "/"))
+
+@login_required
+def toggle_favorite(request, game_id):
+    user = request.user
+    game = get_object_or_404(Game, pk=game_id)
+
+    if user in game.favorites.all():
+        game.favorites.remove(user)
+        messages.info(request, f"'{game.title}' removido dos favoritos.")
+    else:
+        game.favorites.add(user)
+        messages.success(request, f"'{game.title}' adicionado aos favoritos!")
+
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+@login_required
+def toggle_like(request, game_id):
+    user = request.user
+    game = get_object_or_404(Game, pk=game_id)
+
+    if user in game.likes.all():
+        game.likes.remove(user)
+        messages.info(request, f"Você retirou o like de '{game.title}'.")
+    else:
+        game.likes.add(user)
+        messages.success(request, f"Você curtiu '{game.title}'!")
+
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+
+
