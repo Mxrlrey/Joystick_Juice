@@ -31,15 +31,15 @@
                      {% if message.sender == request.user %} text-end bg-accent-subtle {% else %} bg-secondary-subtle {% endif %}">
 
                     <strong class="
-                        {% if message.sender == request.user %} text-accent-light {% else %} text-white {% endif %}">
+                        {% if message.sender == request.user %} text-accent-light {% else %} text-dark {% endif %}">
                         {{ message.sender.username }}
                     </strong>
                     {% if message.game %}
                         <span class="badge text-bg-info ms-2">{{ message.game.title }}</span>
-                    {% endif %}:
+                    {% endif %}
                     <span class="
-                        {% if message.sender != request.user %} text-light {% else %} text-dark {% endif %}">
-                        {{ message.content }}
+                        {% if message.sender == request.user %} text-accent-light {% else %} text-dark {% endif %}">
+                        : {{ message.content }}
                     </span>
                 </div>
             {% empty %}

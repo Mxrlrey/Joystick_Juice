@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
+from django.contrib.auth.models import User
 from .forms import ClubForm, ClubMessageForm
 from .models import Club
 
@@ -116,3 +116,36 @@ def club_chat(request, club_id):
     }
     return render(request, 'club/chat.html', context)
 
+@login_required
+def list_user_clubs(request, user_id):
+    target_user = get_object_or_404(User, id=user_id)
+    clubs = Club.objects.filter(members=target_user)
+    is_owner = request.user == target_user
+
+    context = {
+        'clubs': clubs,
+        'target_user': target_user,
+        'is_owner': is_owner,
+        'page_title': f'Clubes de @{target_user.username}'
+    }
+
+    return render(request, 'club/list.html', context)
+
+
+# Leave Club
+@login_required
+def leave_club(request, club_id):
+    club = get_object_or_404(Club, id=club_id)
+
+    if request.user == club.creator:
+        messages.error(request,
+                       'O criador do clube não pode sair diretamente. Transfira a propriedade ou exclua o clube.')
+        return redirect('club_detail', club_id=club.id)  # Retorna para os detalhes
+
+    if request.user in club.members.all():
+        club.members.remove(request.user)
+        messages.success(request, f'Você saiu do clube "{club.name}".')
+        return redirect('list_clubs')
+    else:
+        messages.info(request, 'Você não é membro deste clube.')
+        return redirect('club_detail', club_id=club.id)

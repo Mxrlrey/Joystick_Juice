@@ -67,11 +67,9 @@
                     <a href="{% url 'club_chat' club.id %}" class="btn btn-success w-100 py-2">
                         <i class="fas fa-comments me-2"></i> Conversar no grupo
                     </a>
-                    {% comment %}
-                    <a href="{% url 'leave_club' club.id %}" class="btn btn-warning w-100 py-2">
+                    <a href="{% url 'leave_club' club.id %}" class="btn btn-custom-danger w-100 py-2">
                         <i class="fas fa-sign-out-alt me-2"></i> Sair do Clube
                     </a>
-                    {% endcomment %}
                 {% elif request.user.is_authenticated %}
                     <a href="{% url 'join_club' club.id %}" class="btn btn-custom-accent w-100 py-2">
                         <i class="fas fa-door-open me-2"></i> Entrar no Clube

@@ -9,7 +9,6 @@
   <div class="page-container">
     <div class="panel" style="margin-top:2.5rem;">
       <div class="d-flex flex-column flex-md-row align-items-center gap-4">
-        <!-- Avatar -->
         <div>
           <div class="avatar-wrap" style="width:120px; height:120px;">
             {% if person and person.avatar_url %}
@@ -28,7 +27,6 @@
           </div>
         </div>
 
-        <!-- Basic info -->
         <div class="flex-grow-1 w-100">
           <div class="d-flex align-items-start justify-content-between gap-3">
             <div>
@@ -56,7 +54,6 @@
 
       <hr style="margin:1.6rem 0; opacity:0.08; border-color:var(--soft)">
 
-      <!-- Details grid -->
       <div class="row">
         <div class="col-md-4 mb-3">
           <h6 class="text-uppercase small text-primary">Nome</h6>
@@ -91,7 +88,6 @@
         <p class="mb-0">{{ person.bio|default:"Sem biografia." }}</p>
       </div>
 
-      <!-- Estatísticas -->
       <div class="mt-4">
         <div class="row g-3">
           <div class="col-sm-4">
@@ -108,14 +104,15 @@
           </div>
           <div class="col-sm-4">
             <div class="panel p-3 text-center">
-              <div class="h4 mb-0">0</div>
-              <div class="small text-muted">Clubes</div>
+              <a href="{% url 'list_user_clubs' user_obj.id %}" class="text-decoration-none text-reset">
+                <div class="h4 mb-0">{{ club_count|default:0 }}</div>
+                <div class="small text-muted">Clubes</div>
+              </a>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Status pills centralizados -->
       <div class="mt-4">
         <div class="statuses-row">
           <a href="{% url 'user_game_list' user_obj.id %}?status=P" class="status-pill">
@@ -140,7 +137,6 @@
         </div>
       </div>
 
-      <!-- Jogos favoritos -->
       <div class="favorites-section">
         <div class="favorites-header">
           <div>
