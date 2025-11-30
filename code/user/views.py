@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import SignupForm, PersonForm, AvatarForm, UserDeleteForm
 from .models import Person
 from game.models import Game
+from django.db.models import Count
+from game.models import UserGameList
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
@@ -36,10 +38,15 @@ def detail(request, user_id=None):
         person = None
 
     is_owner = request.user.is_authenticated and (request.user.pk == user_obj.pk)
+    
     favorite_games_qs = user_obj.favorite_games.all()
 
+    status_counts_qs = (UserGameList.objects.filter(user=user_obj).values('status') .annotate(total=Count('id')))
+    
+    status_counts = {item['status']: item['total'] for item in status_counts_qs}
+
     return render(request, 'account/detail.html', {
-        'person': person, 'user_obj': user_obj, 'is_owner': is_owner, 'favorite_games': favorite_games_qs,
+        'person': person, 'user_obj': user_obj, 'is_owner': is_owner, 'favorite_games': favorite_games_qs, 'status_counts': status_counts,
     })
 
 @login_required

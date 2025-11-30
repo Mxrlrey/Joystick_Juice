@@ -120,22 +120,22 @@
         <div class="statuses-row">
           <a href="{% url 'user_game_list' user_obj.id %}?status=P" class="status-pill">
             <span class="status-square status-p"></span>
-            <span class="status-text">Para jogar</span>
+            <span class="status-text">Para jogar ({{ status_counts.P|default:0 }})</span>
           </a>
 
           <a href="{% url 'user_game_list' user_obj.id %}?status=J" class="status-pill">
             <span class="status-square status-j"></span>
-            <span class="status-text">Jogando</span>
+            <span class="status-text">Jogando ({{ status_counts.J|default:0 }})</span>
           </a>
 
           <a href="{% url 'user_game_list' user_obj.id %}?status=C" class="status-pill">
             <span class="status-square status-c"></span>
-            <span class="status-text">Concluído</span>
+            <span class="status-text">Concluído ({{ status_counts.C|default:0 }})</span>
           </a>
 
           <a href="{% url 'user_game_list' user_obj.id %}?status=A" class="status-pill">
             <span class="status-square status-a"></span>
-            <span class="status-text">Abandonado</span>
+            <span class="status-text">Abandonado ({{ status_counts.A|default:0 }})</span>
           </a>
         </div>
       </div>
