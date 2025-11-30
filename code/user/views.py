@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import SignupForm, PersonForm, AvatarForm, UserDeleteForm
 from .models import Person
+from game.models import Game
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
@@ -35,8 +36,11 @@ def detail(request, user_id=None):
         person = None
 
     is_owner = request.user.is_authenticated and (request.user.pk == user_obj.pk)
+    favorite_games_qs = user_obj.favorite_games.all()
 
-    return render(request, 'account/detail.html', { 'person': person, 'user_obj': user_obj, 'is_owner': is_owner})
+    return render(request, 'account/detail.html', {
+        'person': person, 'user_obj': user_obj, 'is_owner': is_owner, 'favorite_games': favorite_games_qs,
+    })
 
 @login_required
 def delete(request):
@@ -64,7 +68,7 @@ def edit_profile(request):
         form = PersonForm(request.POST, instance=person)
         if form.is_valid():
             form.save()
-            return HttpResponse("Voce editou mano!")
+            return redirect('account_detail_self')
 
     else:
         form = PersonForm(instance=person)
@@ -76,17 +80,15 @@ def edit_avatar(request):
     user = request.user
     person = request.user.person
 
-    edit_avatar = True
-
     if request.method == 'POST':
         form = AvatarForm(request.POST, request.FILES, instance=person)
         if form.is_valid():
             form.save()
-            return HttpResponse("Voce editou o avatar mano!")
+            return redirect('account_detail_self')
 
     else:
         form = AvatarForm(instance=person)
 
-    return render(request, 'account/form.html', {'form': form, 'user': user, 'edit_avatar': edit_avatar})
+    return render(request, 'account/edit_avatar.html', {'form': form, 'user': user, 'person': person})
 
 

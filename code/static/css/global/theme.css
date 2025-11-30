@@ -27,7 +27,7 @@
     background: linear-gradient(45deg, var(--accent), var(--accent-2));
     border-color: var(--accent);
     color: var(--deep);
-    border-radius: var(--radius);
+
     box-shadow: none;
     transition: all .24s ease;
 }
@@ -44,6 +44,7 @@
     border-color: var(--accent) !important;
     background: transparent !important;
     
+    
 }
 .btn-outline-primary:hover,
 .btn-outline-primary:focus {
@@ -54,18 +55,30 @@
 
 /* --- Botões secundários / light / danger (mantém semântica bootstrap) --- */
 .btn-secondary {
-    background: var(--btn-bg);
-    color: var(--text);
-    border-color: var(--soft);
-    border-radius: var(--radius);
+    background: var(--btn-bg) !important;
+    color: var(--text) !important;
+    border-color: var(--soft) !important;
+    
 }
+
+.btn-outline-secondary {
+    color: var(--text) !important;
+    border-color: var(--soft) !important;
+    background: transparent !important;
+   
+}
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+    background: var(--btn-bg) !important;
+    color: var(--accent) !important;
+    border-color: var(--accent) !important;
+}
+
 .btn-light {
     background: var(--btn-bg);
     color: var(--text);
 }
-.btn-danger {
-    border-radius: var(--radius);
-}
+
 
 /* --- Textos / backgrounds --- */
 .text-primary { color: var(--accent) !important; }
@@ -82,7 +95,7 @@ a.text-primary:hover, .link-primary:hover { color: var(--accent-2); text-decorat
     background: var(--deep);
     border: 1px solid var(--soft);
     color: var(--text);
-    border-radius: 8px;
+    border-radius: 6px;
     transition: box-shadow .18s ease, border-color .18s ease;
 }
 .form-control:focus,

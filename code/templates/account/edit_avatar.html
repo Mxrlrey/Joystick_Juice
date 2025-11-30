@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Editar Avatar — Joystick Juice{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/account/avatar-form.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="page-container py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-8 col-lg-9 col-md-10">
+        <div class="avatar-card panel p-4 p-md-5">
+
+          <!-- header -->
+          <div class="d-flex align-items-start justify-content-between mb-4 pb-2 border-bottom">
+            <div>
+              <h3 class="mb-1">Alterar avatar</h3>
+              <p class="small text-muted mb-0">Envie uma nova imagem (JPG/PNG). Veja a pré-visualização antes de salvar.</p>
+            </div>
+            <a href="{% url 'account_detail_self' %}" class="btn btn-outline-secondary btn-sm align-self-start">
+              <i class="fas fa-arrow-left me-1"></i> Voltar
+            </a>
+          </div>
+
+          {% if messages %}
+            <div class="mb-3">
+              {% for m in messages %}
+                <div class="alert {% if m.tags %}alert-{{ m.tags }}{% else %}alert-info{% endif %} mb-2">
+                  {{ m }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <form id="avatarForm" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Erros do formulário -->
+            {% if form.non_field_errors %}
+              <div class="form-errors">
+                {% for e in form.non_field_errors %}
+                  <div class="small">{{ e }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {# hidden widget (preserva name do form) #}
+            {% if form.avatar_url %}
+              <div style="display:none;">{{ form.avatar_url }}</div>
+              <input type="file" id="avatarFileInput" name="{{ form.avatar_url.html_name }}" accept="image/*" style="display:none;">
+            {% else %}
+              <input type="file" id="avatarFileInput" name="avatar_url" accept="image/*" style="display:none;">
+            {% endif %}
+
+            <!-- previews group (two columns on desktop, stacked on mobile) -->
+            <div class="avatar-previews-group">
+
+              <!-- Avatar atual -->
+              <div class="preview-column">
+                <div class="small text-muted mb-2 text-center">Avatar atual</div>
+                <div class="current-avatar-preview mb-3 mx-auto">
+                  {% if person and person.avatar_url %}
+                    <img src="{{ person.avatar_url.url }}" alt="Avatar atual de {{ user.username }}">
+                  {% else %}
+                    <div class="avatar-default-preview">{{ user.username|first|upper }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Pré-visualização nova - SEMPRE VISÍVEL -->
+              <div class="preview-column">
+                <div class="small text-muted mb-2 text-center">Pré-visualização</div>
+                <div class="avatar-preview" id="avatarPreview">
+                  <img id="avatarPreviewImg" src="" alt="Preview do novo avatar" />
+                  <div class="preview-placeholder">
+                    <i class="fas fa-image"></i>
+                  </div>
+                </div>
+              </div>
+
+            </div> <!-- avatar-previews-group -->
+
+            <!-- Controles centralizados - ÚNICOS -->
+            <div class="avatar-controls">
+              <div class="control-buttons">
+                <button type="button" id="chooseImageBtn" class="btn btn-outline-primary">
+                  <i class="fas fa-upload me-1"></i> Escolher imagem
+                </button>
+                <button type="button" id="resetImageBtn" class="btn btn-outline-secondary">
+                  <i class="fas fa-undo me-1"></i> Reverter
+                </button>
+              </div>
+
+              <div class="file-info">
+                <div id="fileName" class="small">Nenhum arquivo selecionado</div>
+              </div>
+            </div>
+
+            <!-- footer actions centered -->
+            <div class="avatar-actions d-flex justify-content-center gap-3">
+              <a href="{% url 'account_detail_self' %}" class="btn btn-outline-secondary">Cancelar</a>
+              <button type="submit" class="btn btn-primary">Salvar imagem</button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/account/avatar.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,263 @@
+.account-form-container {
+  margin-top: 2.5rem;
+}
+
+.account-form-card {
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(2,2,10,0.18);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+.account-form-card .card-title {
+  background: linear-gradient(45deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+/* Header do formulário */
+.form-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.form-header-content {
+  flex: 1;
+}
+
+.form-header-actions {
+  flex-shrink: 0;
+}
+
+/* Estados de alerta específicos */
+.delete-warning {
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.delete-warning .warning-icon {
+  color: #dc3545;
+  font-size: 1.2rem;
+  margin-right: 0.75rem;
+}
+
+.edit-info {
+  background: rgba(241, 122, 13, 0.1);
+  border: 1px solid rgba(241, 122, 13, 0.3);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.edit-info .info-icon {
+  color: var(--accent);
+  font-size: 1.2rem;
+  margin-right: 0.75rem;
+}
+
+/* Informações do usuário */
+.current-user-info {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--soft);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.user-avatar-small {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-avatar-small img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-avatar-small .avatar-default {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, var(--accent), var(--accent-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--deep);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* CAMPOS DO FORMULÁRIO - CORES PERSONALIZADAS */
+.form-control {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: var(--text) !important;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px rgba(241, 122, 13, 0.15) !important;
+  color: var(--text) !important;
+}
+
+.form-control:disabled {
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: var(--muted) !important;
+  border-color: rgba(255, 255, 255, 0.04) !important;
+  opacity: 0.6;
+}
+
+/* Placeholder personalizado */
+.form-control::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+
+/* Campos do formulário - GRID */
+.form-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Campo de biografia ocupa linha completa */
+.form-field.bio-field {
+  grid-column: 1 / -1;
+}
+
+.form-field {
+  margin-bottom: 0;
+}
+
+.form-label {
+  color: var(--text);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: block;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Ajuda dos campos */
+.form-help {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+
+.form-help i {
+  margin-right: 0.5rem;
+}
+
+/* Erros dos campos */
+.field-errors {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.field-errors i {
+  margin-right: 0.5rem;
+}
+
+/* Ações do formulário */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--soft);
+}
+
+/* Divisor */
+.form-divider {
+  margin: 2rem 0;
+  opacity: 0.08;
+  border-color: var(--soft);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .account-form-container {
+    margin-top: 1.5rem;
+  }
+  
+  .account-form-card {
+    margin: 0 0.5rem;
+    padding: 1.5rem !important;
+  }
+  
+  .form-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .form-header-actions {
+    width: 100%;
+  }
+  
+  .form-fields-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  /* Em mobile, o campo bio já ocupa linha completa por padrão */
+  .form-field.bio-field {
+    grid-column: 1;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions .btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .current-user-info .d-flex {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .user-avatar-small {
+    align-self: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .form-fields-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+select.form-control option,
+select.form-select option,
+select option {
+  background: var(--bg);
+  color: var(--text);
+}
+

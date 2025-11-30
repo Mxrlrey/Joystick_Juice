@@ -1,0 +1,333 @@
+/* static/css/account/detail.css
+   Estilos específicos para a página de detalhes da conta
+   Reutiliza as variáveis e classes do tema base
+*/
+
+/* -----------------------------
+   Avatar overlay (editar) - account detail
+   ----------------------------- */
+.avatar-wrap {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  overflow: visible;
+}
+
+.avatar-img {
+  display: block;
+  border-radius: 50%;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  transition: transform .18s ease;
+  border: 2px solid var(--accent);
+}
+
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(2,2,10,0.45);
+  opacity: 0;
+  transition: opacity .18s ease, background .18s ease;
+  text-decoration: none;
+  pointer-events: none;
+}
+
+.avatar-edit-btn {
+  pointer-events: auto;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--soft);
+  color: var(--text);
+  backdrop-filter: blur(6px);
+  padding: .35rem .6rem;
+  border-radius: 10px;
+  font-size: .85rem;
+  display: inline-flex;
+  gap: .45rem;
+  align-items: center;
+}
+
+.avatar-wrap:hover .avatar-overlay,
+.avatar-wrap:focus-within .avatar-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.avatar-wrap:hover .avatar-img {
+  transform: scale(1.03);
+}
+
+.avatar-overlay:focus,
+.avatar-edit-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(241,122,13,0.12);
+}
+
+/* -----------------------------
+   Status pills (linha de links) - centralizados horizontalmente
+   ----------------------------- */
+.statuses-row {
+  margin-top: 1rem;
+  gap: 0.75rem;
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  flex-wrap: wrap;
+}
+
+/* cada link aparece como "pill" leve */
+.status-pill {
+  padding: 0.45rem 0.75rem;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid transparent;
+  color: var(--text);
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  min-width: 140px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.status-pill:hover,
+.status-pill:focus {
+  transform: translateY(-3px);
+  text-decoration: none;
+  border-color: rgba(241,122,13,0.12);
+  box-shadow: 0 8px 20px rgba(2,2,10,0.2);
+}
+
+/* quadradinho colorido à esquerda */
+.status-square {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18) inset;
+  margin-right: 0.5rem;
+}
+
+/* cores */
+.status-p { background: linear-gradient(45deg, #f6c84a, #f17a0d); } /* Para jogar */
+.status-j { background: linear-gradient(45deg, #37b24d, #2f9e44); } /* Jogando */
+.status-c { background: linear-gradient(45deg, #4f46e5, #3b82f6); } /* Concluído */
+.status-a { background: linear-gradient(45deg, #e55353, #c92a2a); } /* Abandonado */
+
+/* texto da label */
+.status-text {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+/* -----------------------------
+   Jogos Favoritos
+   ----------------------------- */
+.favorites-section {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--soft);
+}
+
+.favorites-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.favorites-count {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Grid de jogos */
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Cartão do jogo */
+.game-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Thumbnail do jogo */
+.game-thumb {
+  width: 100%;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--deep);
+  border: 1px solid var(--soft);
+  transition: all 0.3s ease;
+}
+
+.game-card:hover .game-thumb {
+  border-color: var(--accent);
+  box-shadow: 0 8px 25px rgba(241, 122, 13, 0.15);
+}
+
+.game-thumb.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--panel), var(--deep));
+  border: 1px dashed var(--soft);
+}
+
+.game-thumb.placeholder i {
+  font-size: 2rem;
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+/* Overlay gradiente na imagem */
+.game-thumb::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(transparent, rgba(2,2,10,0.8));
+  border-radius: 0 0 8px 8px;
+}
+
+/* Informações do jogo */
+.game-info {
+  padding: 0.75rem 0.25rem 0;
+}
+
+.game-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.game-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Estado vazio */
+.favorites-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px dashed var(--soft);
+  border-radius: 12px;
+}
+
+.favorites-empty .empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.favorites-empty .empty-text {
+  margin-bottom: 1.5rem;
+}
+
+/* Botão ver todos */
+.favorites-more {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* -----------------------------
+   Responsividade
+   ----------------------------- */
+@media (max-width: 992px) {
+  .favorites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+  
+  .game-thumb {
+    height: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .favorites-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .favorites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.875rem;
+  }
+  
+  .game-thumb {
+    height: 160px;
+  }
+  
+  .game-info {
+    padding: 0.5rem 0.125rem 0;
+  }
+  
+  .game-title {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .favorites-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .game-thumb {
+    height: 140px;
+  }
+  
+  .favorites-empty {
+    padding: 2rem 1rem;
+  }
+
+  /* Status pills em mobile ocupam 100% em duas colunas */
+  .statuses-row {
+    gap: 0.5rem;
+  }
+  
+  .status-pill {
+    min-width: 48%;
+  }
+  
+  .status-pill .status-text {
+    font-size: 0.9rem;
+  }
+}
+
