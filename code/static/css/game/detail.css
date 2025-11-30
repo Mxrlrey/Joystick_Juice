@@ -1,7 +1,13 @@
+.main-content {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
 .hero-banner {
     position: relative;
     overflow: hidden;
     padding-bottom: 2rem;
+    margin-top: 0;
 }
 
 .banner-img {
@@ -26,8 +32,7 @@
     filter: brightness(0.7);
 }
 
-.banner-bg-style::before,
-.banner-bg-style::after {
+.banner-bg-style::before {
     content: '';
     position: absolute;
     top: 0;
@@ -35,17 +40,19 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
-}
-
-.banner-bg-style::before {
-    background: radial-gradient(circle at center, transparent 30%, var(--bg) 80%);
-}
-
-.banner-bg-style::after {
-    height: 150px;
-    top: auto;
-    bottom: 0;
-    background: linear-gradient(to top, var(--bg) 10%, transparent 100%);
+    z-index: 1;
+    background:
+        radial-gradient(
+            circle at center,
+            transparent 45%,
+            rgba(0, 0, 0, 0.6) 80%,
+            var(--bg) 100%
+        ),
+        linear-gradient(
+            to top,
+            var(--bg) 0%,
+            transparent 30%
+        );
 }
 
 .hero-content {

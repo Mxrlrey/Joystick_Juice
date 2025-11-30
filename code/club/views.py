@@ -92,7 +92,6 @@ def join_club(request, club_id):
 def club_chat(request, club_id):
     club = get_object_or_404(Club, id=club_id)
 
-    # Verifica se o usuário é membro
     if request.user not in club.members.all():
         messages.error(request, 'Você precisa ser membro do clube para ver as mensagens.')
         return redirect('club_detail', club_id=club.id)

@@ -253,9 +253,9 @@ def user_game_list(request, pk=None):
     else:
         user_profile = request.user
 
+    is_owner = request.user == user_profile
     STATUS_MAP = dict(STATUS_CHOICES)
     STATUS_FILTERS = [("T", "Todos")] + list(STATUS_CHOICES)
-
     qs = UserGameList.objects.filter(user=user_profile).select_related('game')
     query = request.GET.get("q", "").strip()
     status_filter = request.GET.get("status", "T").strip()
@@ -303,6 +303,7 @@ def user_game_list(request, pk=None):
         "current_status": status_filter,
         "user_profile": user_profile,
         "STATUS_CHOICES": STATUS_CHOICES,
+        "is_owner": is_owner,
     }
     return render(request, "game/user_game_list.html", context)
 
