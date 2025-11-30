@@ -253,17 +253,58 @@ def user_game_list(request, pk=None):
     else:
         user_profile = request.user
 
-    qs = UserGameList.objects.filter(user=user_profile)
-    status = request.GET.get("status")
-    if status and status != "T":
-        qs = qs.filter(status=status)
+    STATUS_MAP = dict(STATUS_CHOICES)
+    STATUS_FILTERS = [("T", "Todos")] + list(STATUS_CHOICES)
+
+    qs = UserGameList.objects.filter(user=user_profile).select_related('game')
+    query = request.GET.get("q", "").strip()
+    status_filter = request.GET.get("status", "T").strip()
+
+    if query:
+        qs = qs.filter(game__title__icontains=query)
+
+    if status_filter != "T" and status_filter in STATUS_MAP:
+        qs = qs.filter(status=status_filter)
+
+    games_by_status = {}
+    DISPLAY_ORDER = ['J', 'P', 'C', 'A']
+
+    if not query:
+        for code, name in STATUS_CHOICES:
+            games_by_status[code] = {
+                'name': name,
+                'games': []
+            }
+
+        for ug in qs.order_by('updated_at'):
+            if ug.status in games_by_status:
+                games_by_status[ug.status]['games'].append(ug)
+
+        games_by_status = {
+            code: data for code, data in games_by_status.items() if data['games']
+        }
+
+        ordered_games = {
+            code: games_by_status[code]
+            for code in DISPLAY_ORDER
+            if code in games_by_status
+        }
+
+    else:
+        ordered_games = {'S': {
+            'name': f'Resultados para "{query}"',
+            'games': list(qs)
+        }}
 
     context = {
-        "user_games": qs,
+        "user_games_grouped": ordered_games,
+        "STATUS_FILTERS": STATUS_FILTERS,
+        "query": query,
+        "current_status": status_filter,
         "user_profile": user_profile,
-        "current_status": status or "T",
+        "STATUS_CHOICES": STATUS_CHOICES,
     }
-    return render(request, "games/user_game_list.html", context)
+    return render(request, "game/user_game_list.html", context)
 
 # Add to List
 @login_required

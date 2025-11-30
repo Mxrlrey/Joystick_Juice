@@ -6,13 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Joystick Juice - Gerenciar Jogos</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
     <link rel="stylesheet" href="{% static 'css/global/theme.css' %}">
-
     <link rel="stylesheet" href="{% static 'css/global/base.css' %}">
 
     </head>
@@ -44,13 +40,18 @@
                         <i class="fas fa-search me-1"></i> Filtrar
                     </button>
 
-                    <button type="button" id="edit-btn" class="btn btn-custom-light py-2" disabled>
+                    <button type="button" id="edit-btn"
+                            class="btn btn-custom-light py-2"
+                            disabled
+                            data-edit-url="{% url 'edit_game' 0 %}">
                         <i class="fas fa-edit me-1"></i> Editar
                     </button>
-                    <button type="button" id="delete-btn" class="btn btn-custom-danger py-2" disabled>
+                    <button type="button" id="delete-btn"
+                            class="btn btn-custom-danger py-2"
+                            disabled
+                            data-delete-url="{% url 'delete_game' 0 %}">
                         <i class="fas fa-trash-alt me-1"></i> Excluir
                     </button>
-
                     {% if show_create_button %}
                         <a href="{% url 'add_game' %}?title={{ query|default_if_none:'' }}" class="btn btn-custom-accent py-2 ms-lg-auto">
                             <i class="fas fa-plus-circle me-1"></i> Cadastrar Jogo
@@ -62,85 +63,53 @@
             </div>
 
             <div class="game-list row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-                {% for jogo in games %}
-                    {% if not request.GET.q or request.GET.q|lower in jogo.title|lower %}
-                    <div class="col">
-                        <div class="game-card panel h-100 d-flex flex-column">
-                            <div class="d-flex align-items-start mb-3">
-                                <div class="form-check me-3 mt-1">
-                                    <input
-                                        type="radio"
-                                        name="selected_game"
-                                        value="{{ jogo.id }}"
-                                        id="game-{{ jogo.id }}"
-                                        class="form-check-input select-game"
-                                    >
+            {% for jogo in games %}
+                {% if not request.GET.q or request.GET.q|lower in jogo.title|lower %}
+                <div class="col">
+                    <div class="game-card panel h-100 d-flex flex-column">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="form-check me-3 mt-1">
+                                <input
+                                    type="radio"
+                                    name="selected_game"
+                                    value="{{ jogo.id }}"
+                                    id="game-{{ jogo.id }}"
+                                    class="form-check-input select-game"
+                                >
+                            </div>
+                            <p class="game-title mb-0 flex-grow-1 theme-accent" style="font-size: 1.15rem; font-weight: 600;">
+                                <a href="{% url 'game_detail' jogo.pk %}" class="text-decoration-none theme-accent">
+                                    {{ jogo.title }}
+                                </a>
+                            </p>
+                            </div>
+
+                        <div class="game-cover-container mb-3" style="aspect-ratio: 16/9; overflow: hidden; border-radius: var(--radius);">
+                            {% if jogo.cover_url %}
+                                <img src="{{ jogo.cover_url }}" alt="{{ jogo.title }} capa" class="w-100 h-100 object-fit-cover">
+                            {% else %}
+                                <div class="no-image bg-deep text-muted d-flex align-items-center justify-content-center h-100 p-4">
+                                    <i class="fas fa-image fa-2x me-2"></i> Sem Imagem
                                 </div>
-                                <p class="game-title mb-0 flex-grow-1 theme-accent" style="font-size: 1.15rem; font-weight: 600;">{{ jogo.title }}</p>
-                            </div>
+                            {% endif %}
+                        </div>
 
-                            <div class="game-cover-container mb-3" style="aspect-ratio: 16/9; overflow: hidden; border-radius: var(--radius);">
-                                {% if jogo.cover_url %}
-                                    <img src="{{ jogo.cover_url }}" alt="{{ jogo.title }} capa" class="w-100 h-100 object-fit-cover">
-                                {% else %}
-                                    <div class="no-image bg-deep text-muted d-flex align-items-center justify-content-center h-100 p-4">
-                                        <i class="fas fa-image fa-2x me-2"></i> Sem Imagem
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <div class="game-info mt-auto">
-                                <p class="game-genre mb-1 text-muted"><strong>Gênero:</strong> {{ jogo.genre|default:"Indefinido" }}</p>
-                                <p class="game-release mb-1 text-muted"><strong>Lançamento:</strong> {{ jogo.release_date|date:"d/m/Y" }}</p>
-                                <p class="game-developer mb-0 text-muted"><strong>Desenvolvedor:</strong> {{ jogo.developer|default:"Desconhecido" }}</p>
-                            </div>
+                        <div class="game-info mt-auto">
+                            <p class="game-genre mb-1 text-muted"><strong>Gênero:</strong> {{ jogo.genre|default:"Indefinido" }}</p>
+                            <p class="game-release mb-1 text-muted"><strong>Lançamento:</strong> {{ jogo.release_date|date:"d/m/Y" }}</p>
+                            <p class="game-developer mb-0 text-muted"><strong>Desenvolvedor:</strong> {{ jogo.developer|default:"Desconhecido" }}</p>
                         </div>
                     </div>
-                    {% endif %}
-                {% empty %}
-                    <div class="col-12">
-                        <div class="alert alert-primary mt-4" role="alert">
-                            <i class="fas fa-info-circle me-2"></i> Nenhum jogo cadastrado ainda.
-                        </div>
-                    </div>
+                </div>
+                {% endif %}
+            {% empty %}
                 {% endfor %}
-            </div>
+        </div>
 
         </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const radios = document.querySelectorAll('.select-game');
-        const editBtn = document.getElementById('edit-btn');
-        const deleteBtn = document.getElementById('delete-btn');
-
-        function updateActionButtons() {
-            const selectedRadio = document.querySelector('.select-game:checked');
-            if (selectedRadio) {
-                const selectedId = selectedRadio.value;
-                editBtn.disabled = false;
-                deleteBtn.disabled = false;
-
-                editBtn.onclick = () => {
-                    window.location.href = "{% url 'edit_game' 0 %}".replace("/0/", `/${selectedId}/`);
-                };
-                deleteBtn.onclick = () => {
-                    window.location.href = "{% url 'delete_game' 0 %}".replace("/0/", `/${selectedId}/`);
-                };
-            } else {
-                editBtn.disabled = true;
-                deleteBtn.disabled = true;
-                editBtn.onclick = null;
-                deleteBtn.onclick = null;
-            }
-        }
-
-        radios.forEach(radio => {
-            radio.addEventListener('change', updateActionButtons);
-        });
-
-        window.onload = updateActionButtons;
-    </script>
+    <script src="{% static 'js/game/list.js' %}"></script>
 </body>
 </html>

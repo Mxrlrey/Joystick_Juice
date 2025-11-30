@@ -67,7 +67,7 @@ def delete_club(request, club_id):
 @login_required
 def club_detail(request, club_id):
     club = get_object_or_404(Club, id=club_id)
-    members = club.members.all()  # lista de membros do clube
+    members = club.members.all()
 
     context = {
         'club': club,
@@ -108,7 +108,7 @@ def club_chat(request, club_id):
     else:
         form = ClubMessageForm()
 
-    messages_list = club.messages.all()  # Mensagens do clube ordenadas por data (Meta ordering)
+    messages_list = club.messages.all()
 
     context = {
         'club': club,

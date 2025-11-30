@@ -1,0 +1,104 @@
+.game-status-section {
+    margin-bottom: 3rem;
+    padding-top: 1rem;
+}
+
+.game-list-item {
+    display: flex;
+    align-items: center;
+    background: var(--panel);
+    border: 1px solid var(--soft);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    padding: 10px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 10;
+}
+
+.game-list-item.dropdown-active {
+    z-index: 100;
+}
+
+.status-dropdown-container .dropdown-menu {
+    z-index: 1000;
+}
+
+.game-list-item:hover {
+    background: var(--deep);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.game-cover-sm {
+    width: 60px;
+    height: 90px;
+    overflow: hidden;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-right: 15px;
+}
+
+.game-cover-sm img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.game-info-container {
+    flex-grow: 1;
+}
+
+.game-title-list {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    transition: color 0.2s ease;
+}
+
+.game-list-item:hover .game-title-list {
+    color: var(--accent);
+}
+
+.game-meta-list {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.3em 0.6em;
+    font-weight: 700;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.status-filter-nav .nav-link {
+    color: var(--text);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    margin: 0 5px;
+    transition: all 0.2s;
+}
+
+.status-filter-nav .nav-link.active,
+.status-filter-nav .nav-link:hover {
+    background: var(--accent);
+    color: var(--deep) !important;
+    font-weight: 600;
+}
+
+
+.status-J { background-color: #0d6efd; color: white; }
+.status-P { background-color: #ffc107; color: black; }
+.status-C { background-color: #198754; color: white; }
+.status-A { background-color: #dc3545; color: white; }
+.status-T { background-color: #6c757d; color: white; }
+
+.status-indicator.status-J { background-color: #0d6efd; }
+.status-indicator.status-P { background-color: #ffc107; }
+.status-indicator.status-C { background-color: #198754; }
+.status-indicator.status-A { background-color: #dc3545; }
