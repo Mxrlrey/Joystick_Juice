@@ -1,101 +1,98 @@
 {% extends "base.html" %}
 
 {% block title %}
-  {% if request.resolver_match.url_name == "create_review" %}
-    Criar Avaliação
-  {% elif request.resolver_match.url_name == "edit_review" %}
-    Editar Avaliação
-  {% elif request.resolver_match.url_name == "delete_review" %}
-    Excluir Avaliação
+  {% if request.resolver_match.url_name == "create_list" %}
+    Criar Lista
+  {% elif request.resolver_match.url_name == "edit_list" %}
+    Editar Lista
+  {% elif request.resolver_match.url_name == "delete_list" %}
+    Excluir Lista
+  {% elif request.resolver_match.url_name == "edit_item" %}
+    Editar Item
+  {% elif request.resolver_match.url_name == "remove_item" %}
+    Remover Item
   {% else %}
-    Avaliação
+    Formulário
   {% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="row justify-content-center mt-4">
-  <div class="col-lg-6 col-md-8">
+  <div class="col-lg-8 col-md-10">
 
     <div class="card shadow-lg border-0 rounded-3">
-      
+
       <div class="card-header bg-primary text-white py-3 rounded-top">
         <h5 class="m-0 fw-bold">
-          {% if request.resolver_match.url_name == "create_review" %}
-            <i class="fas fa-star"></i> Criar Avaliação
-          {% elif request.resolver_match.url_name == "edit_review" %}
-            <i class="fas fa-edit"></i> Editar Avaliação
-          {% elif request.resolver_match.url_name == "delete_review" %}
-            <i class="fas fa-trash"></i> Excluir Avaliação
-          {% else %}
-            Avaliação
+          {% if request.resolver_match.url_name == "create_list" %}
+            Criar Lista
+          {% elif request.resolver_match.url_name == "edit_list" %}
+            Editar Lista
+          {% elif request.resolver_match.url_name == "delete_list" %}
+            Excluir Lista
+          {% elif request.resolver_match.url_name == "edit_item" %}
+            Editar Item
+          {% elif request.resolver_match.url_name == "remove_item" %}
+            Remover Item
           {% endif %}
         </h5>
       </div>
 
       <div class="card-body p-4">
-
         <form method="post">
           {% csrf_token %}
 
-          {# ---------- CREATE / EDIT ---------- #}
-          {% if request.resolver_match.url_name != "delete_review" %}
-            <div class="mb-3">
-              {{ form.as_p }}
-            </div>
+          {# CAMPOS DO FORM SOMENTE EM CREATE/EDIT #}
+          {% if request.resolver_match.url_name not in "delete_list remove_item" %}
+            {% if form %}
+              {{ form.non_field_errors }}
+              {% for field in form %}
+                <div class="mb-3">
+                  <label class="form-label">{{ field.label }}</label>
+                  {{ field }}
+                  <div class="text-danger small">{{ field.errors }}</div>
+                </div>
+              {% endfor %}
+            {% endif %}
           {% endif %}
 
-          {# ---------- DELETE ---------- #}
-          {% if request.resolver_match.url_name == "delete_review" %}
-            
+          {# CONFIRMAÇÃO DELETE LIST #}
+          {% if request.resolver_match.url_name == "delete_list" %}
             <div class="alert alert-danger">
-              <h6 class="fw-bold">
-                <i class="fas fa-exclamation-triangle"></i>
-                Tem certeza que deseja excluir esta avaliação?
-              </h6>
-              <p><strong>Jogo:</strong> {{ review.game.title }}</p>
-              <p><strong>Comentário:</strong> {{ review.comment }}</p>
+              <strong>Tem certeza que deseja excluir a lista "{{ gamelist.name }}"?</strong>
+              <p class="mt-2">Todos os itens serão removidos.</p>
             </div>
-
           {% endif %}
 
-          <div class="d-flex justify-content-between align-items-center mt-4">
+          {# CONFIRMAÇÃO REMOVE ITEM #}
+          {% if request.resolver_match.url_name == "remove_item" %}
+            <div class="alert alert-danger">
+              <strong>Tem certeza que deseja remover este item?</strong>
+              <p class="mt-2">
+                <strong>Jogo:</strong> {{ item.game.title }}
+              </p>
+            </div>
+          {% endif %}
 
-            {# Botão principal #}
-            {% if request.resolver_match.url_name == "delete_review" %}
-              <button type="submit" class="btn btn-danger px-4">
-                <i class="fas fa-trash"></i> Excluir
-              </button>
+          <div class="d-flex justify-content-between mt-4">
+            
+            {% if request.resolver_match.url_name in "delete_list remove_item" %}
+              <button class="btn btn-danger px-4" type="submit">Excluir</button>
             {% else %}
-              <button type="submit" class="btn btn-primary px-4">
-                <i class="fas fa-save"></i> Salvar
-              </button>
+              <button class="btn btn-primary px-4" type="submit">Salvar</button>
             {% endif %}
 
-            {# BOTÃO CANCELAR — usa REFERER quando possível #}
-            {% with prev=request.META.HTTP_REFERER %}
-              {% if prev %}
-                <a href="{{ prev }}" class="btn btn-outline-secondary px-4">
-                  <i class="fas fa-arrow-left"></i> Voltar
-                </a>
-              {% else %}
-                {% if request.resolver_match.url_name == "create_review" %}
-                  <a href="{% url 'game_detail' game.pk %}" class="btn btn-outline-secondary px-4">
-                    <i class="fas fa-arrow-left"></i> Cancelar
-                  </a>
-                {% else %}
-                  <a href="{% url 'detail_review' review.pk %}" class="btn btn-outline-secondary px-4">
-                    <i class="fas fa-arrow-left"></i> Cancelar
-                  </a>
-                {% endif %}
-              {% endif %}
-            {% endwith %}
+            {# BOTÃO VOLTAR #}
+            <a href="{{ request.META.HTTP_REFERER|default:'#' }}" class="btn btn-outline-secondary px-4">
+              Voltar
+            </a>
 
           </div>
+
         </form>
-
       </div>
-    </div>
 
+    </div>
   </div>
 </div>
 {% endblock %}

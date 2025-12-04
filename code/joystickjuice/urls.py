@@ -10,6 +10,7 @@ urlpatterns = [
     path("game/", include("game.urls")),
     path('review/', include('review.urls')),
     path('club/', include('club.urls')),
+    path('collections/', include('collection.urls')),
 ]
 
 if settings.DEBUG:

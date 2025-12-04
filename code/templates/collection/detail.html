@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ gamelist.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-start">
+    <div>
+      <h1>{{ gamelist.name }}</h1>
+      <div class="small text-muted">por {{ gamelist.owner }} — {{ gamelist.created_at|date:"d/m/Y" }}</div>
+      {% if gamelist.description %}
+        <p class="mt-2">{{ gamelist.description }}</p>
+      {% endif %}
+    </div>
+
+    <div class="text-end">
+      {% if user.is_authenticated and gamelist.owner == user %}
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'edit_list' gamelist.id %}">Editar</a>
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'delete_list' gamelist.id %}">Excluir</a>
+      {% endif %}
+      <p class="mt-2"><strong>{{ items|length }}</strong> itens</p>
+    </div>
+  </div>
+
+  <hr>
+
+  <h3>Itens</h3>
+  {% if items %}
+    <ul class="list-group mb-3">
+      {% for item in items %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <a href="{% url 'game_detail' item.game.id %}">{{ item.game.title }}</a>
+            {% if item.note %}
+              <div class="small text-muted">Nota: {{ item.note }}</div>
+            {% endif %}
+            <div class="small text-muted">Adicionado: {{ item.added_at|date:"d/m/Y H:i" }}</div>
+          </div>
+
+          <div class="btn-group btn-group-sm">
+            {% if user.is_authenticated and gamelist.owner == user %}
+              <a class="btn btn-outline-secondary" href="{% url 'edit_item' gamelist.id item.id %}">Editar</a>
+              <a class="btn btn-outline-danger" href="{% url 'remove_from_list' gamelist.id item.id %}">Remover</a>
+            {% endif %}
+            <a class="btn btn-outline-primary" href="{% url 'toggle_favorite' item.game.id %}">Toggle Favorito</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Essa lista ainda não tem itens.</p>
+  {% endif %}
+
+  {% if user.is_authenticated and gamelist.owner == user %}
+    <hr>
+    <h4>Adicionar item</h4>
+    {# Form simples: espera que sua view add_item aceite POST em URL add_item(list_id, game_id) #}
+    <form method="post" action="{% url 'add_item' gamelist.id 0 %}" onsubmit="event.preventDefault(); this.action=this.action.replace('/0/','/' + this.querySelector('[name=game_id]').value + '/'); this.submit();">
+      {% csrf_token %}
+      <div class="row g-2">
+        <div class="col-md-4">
+          <input name="game_id" type="number" class="form-control" placeholder="ID do jogo (ex: 12)" required>
+        </div>
+        <div class="col-md-4">
+          <input name="note" class="form-control" placeholder="Nota / comentário (opcional)">
+        </div>
+        <div class="col-md-2">
+          <input name="order" type="number" class="form-control" placeholder="Ordem" min="0">
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-success w-100">Adicionar</button>
+        </div>
+      </div>
+      <div class="small text-muted mt-2">Você também pode adicionar a partir da página de detalhe do jogo.</div>
+    </form>
+  {% endif %}
+
+  <p class="mt-4"><a href="{% url 'lists' %}">← Voltar para todas as listas</a></p>
+</div>
+{% endblock %}
