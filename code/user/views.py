@@ -36,7 +36,6 @@ def detail(request, user_id=None):
     status_counts_qs = (UserGameList.objects.filter(user=user_obj).values('status').annotate(total=Count('id')))
     status_counts = {item['status']: item['total'] for item in status_counts_qs}
     club_count = Club.objects.filter(members=user_obj).count()
-    review_count = Review.objects.filter(user=user_obj).count()
     list_count = GameList.objects.filter(owner=user_obj).count()
 
     return render(request, 'account/detail.html', {

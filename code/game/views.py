@@ -10,6 +10,7 @@ from joystickjuice.utils import STATUS_CHOICES
 from game.forms import GameStatusForm, GameForm
 from review.models import Review
 from django.db.models import Avg, Count
+from django.contrib.auth.decorators import permission_required
 
 User = get_user_model()
 
@@ -29,6 +30,8 @@ def get_igdb_token():
     return resp.json()["access_token"]
 
 # Add
+@login_required
+@permission_required('game.add_game', raise_exception=True)
 def fetch_and_save(request):
     """Busca jogo na IGDB e salva no banco"""
     if request.method == "POST":
@@ -122,6 +125,8 @@ def fetch_and_save(request):
     return render(request, "game/fill.html")
 
 # Read
+@login_required
+@permission_required('game.change_game', raise_exception=True)
 def list_games(request):
     query = request.GET.get("q", "").strip()
     games = Game.objects.all()
@@ -143,6 +148,7 @@ def list_games(request):
 
 #Create
 @login_required
+@permission_required('game.add_game', raise_exception=True)
 def create_game(request):
     if request.method == "POST":
         form = GameForm(request.POST)
@@ -161,6 +167,7 @@ def create_game(request):
 
 #Update
 @login_required
+@permission_required('game.change_game', raise_exception=True)
 def edit_game(request, pk):
     game = get_object_or_404(Game, pk=pk)
 
@@ -181,6 +188,7 @@ def edit_game(request, pk):
 
 #Delete
 @login_required
+@permission_required('game.delete_game', raise_exception=True)
 def delete_game(request, pk):
     game = get_object_or_404(Game, pk=pk)
 
