@@ -1,53 +1,124 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
-
-{% block title %}Detalhes da Avaliação — Joystick Juice{% endblock %}
+{% block title %}Detalhes da Review — Joystick Juice{% endblock %}
 
 {% block content %}
-<main class="main-content flex-grow-1 d-flex justify-content-center py-5">
+<div class="page-container main-content">
+  <!-- MESSAGES -->
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-primary{% endif %} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
-  <div class="page-container" style="max-width: 700px;">
-    <div class="panel shadow p-4 p-md-5">
+  <div class="panel review-panel glass-effect">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+      <div>
+        <h1 class="h4">Review — {{ review.game.title }}</h1>
+        <p class="text-muted small">
+          Avaliada por
+          <a class="user-nickname-link" href="{% url 'account_detail_admin' review.user.pk %}">
+            <strong>{{ review.user.username }}</strong>
+          </a>
+          em <strong>{{ review.created_at|date:"d/m/Y H:i" }}</strong>
+        </p>
+      </div>
 
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0 theme-accent">
-          Avaliação de "{{ review.game.title }}"
-        </h2>
+      <div class="text-end">
+        <div class="mb-1">
+          <span class="badge badge-primary text-muted">Nota: <strong class="">{{ review.rating }}</strong></span>
+        </div>
 
-        {% if request.user == review.user %}
-          <div class="review-actions d-flex gap-2">
-            <a href="{% url 'edit_review' review.pk %}" class="btn btn-sm btn-primary">
-              <i class="fas fa-edit me-1"></i> Editar
-            </a>
-            <a href="{% url 'delete_review' review.pk %}" class="btn btn-sm btn-danger">
-              <i class="fas fa-trash-alt me-1"></i> Excluir
-            </a>
+        {% if user.is_authenticated and user == review.user %}
+          <div>
+            <a class="btn btn-outline-secondary btn-sm me-1" href="{% url 'edit_review' review.pk %}">Editar</a>
+            <a class="btn btn-outline-danger btn-sm" href="{% url 'delete_review' review.pk %}">Excluir</a>
           </div>
         {% endif %}
       </div>
+    </div>
 
-      <hr>
+    <hr>
 
-      <div class="review-info mb-3">
-        <p>
-          <strong>Usuário:</strong>
-          <a href="{% url 'account_detail_admin' review.user.pk %}" class="text-decoration-none theme-accent">
-            {{ review.user.username }}
-          </a>
-        </p>
-        <p><strong>Nota:</strong> {{ review.rating }}/5</p>
-        <p><strong>Comentário:</strong></p>
-        <p class="border p-3 bg-light rounded">{{ review.comment }}</p>
+    <div class="row g-4">
+      <!-- Review main / comments -->
+      <div class="col-12">
+        <div class="panel p-3 mb-3">
+          <h2 class="h6 text-muted mb-2">Review</h2>
+          {% if review.comment %}
+            <p class="mb-0">{{ review.comment|linebreaks }}</p>
+          {% elif review.summary %}
+            <p class="mb-0">{{ review.summary|linebreaks }}</p>
+          {% else %}
+            <p class="text-muted">Nenhum comentário adicional.</p>
+          {% endif %}
+        </div>
+
+        <!-- Area de comentários -->
+        <div class="panel p-3 mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="h6 mb-0">Comentários ({{ comments|length }})</h3>
+
+            {% if user.is_authenticated %}
+              <a href="{% url 'create_comment' review.pk %}" class="btn btn-primary btn-sm">+ Novo comentário</a>
+            {% else %}
+              <a class="btn btn-outline-secondary btn-sm" href="{% url 'login' %}">Entrar para comentar</a>
+            {% endif %}
+          </div>
+
+          <!-- Lista de comentários -->
+          <div id="comments-list">
+            {% for c in comments %}
+              <div class="d-flex mb-3" id="comment-{{ c.pk }}">
+                <a class="user-avatar-link me-3" href="{% url 'account_detail_admin' c.user.pk %}">
+                  <div class="user-avatar">
+                    {% if c.user.person and c.user.person.avatar_url %}
+                      <img src="{{ c.user.person.avatar_url.url }}" alt="{{ c.user.username }}" class="user-avatar-img">
+                    {% else %}
+                      <img src="{% static 'img/global/default-avatar.svg' %}" alt="{{ c.user.username }}" class="user-avatar-img">
+                    {% endif %}
+                  </div>
+                </a>
+
+                <div class="flex-fill">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <a class="user-nickname-link" href="{% url 'account_detail_admin' c.user.pk %}">
+                        <span class="user-nickname">{{ c.user.username }}</span>
+                      </a>
+                      <small class="text-muted ms-2">{{ c.created_at|date:"d/m/Y H:i" }}</small>
+                    </div>
+
+                    <div class="text-end">
+                      {% if user.is_authenticated and user == c.user %}
+                        <a class="btn btn-outline-secondary btn-sm me-1" href="{% url 'edit_comment' c.pk %}">Editar</a>
+                        <a class="btn btn-outline-danger btn-sm me-1" href="{% url 'delete_comment' c.pk %}">Excluir</a>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <!-- TEXTO DO COMENTÁRIO -->
+                  <div id="comment-text-{{ c.pk }}" class="mt-2 mb-2">
+                    <p class="mb-0">{{ c.opinion|linebreaks }}</p>
+                  </div>
+                </div>
+              </div>
+              <hr>
+            {% empty %}
+              <p class="text-muted">Seja o primeiro a comentar esta review.</p>
+            {% endfor %}
+          </div>
+        </div>
+
+        <a href="{% url 'game_detail' review.game.pk %}" class="btn btn-outline-secondary">Voltar ao jogo</a>
       </div>
-
-      <div class="text-center mt-4">
-        <a href="{% url 'list_reviews' review.game.pk %}" class="btn btn-custom-light">
-          <i class="fas fa-arrow-left me-1"></i> Voltar para Avaliações
-        </a>
-      </div>
-
     </div>
   </div>
-
-</main>
+</div>
 {% endblock %}
+

@@ -1,10 +1,11 @@
-from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import SignupForm, PersonForm, AvatarForm, UserDeleteForm
 from .models import Person
-from game.models import Game, UserGameList
+from game.models import UserGameList
 from django.db.models import Count
 from club.models import Club
+from review.models import Review
+from collection.models import GameList
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
@@ -18,13 +19,6 @@ def signup(request):
         form = SignupForm()
     return render(request, 'registration/signup.html', {'form': form})
 
-@login_required
-def list_(request):
-    users = User.objects.all()
-
-    return render(request, 'account/index.html', {'users' : users})
-
-@login_required
 @login_required
 def detail(request, user_id=None):
     if user_id is None:
@@ -42,6 +36,8 @@ def detail(request, user_id=None):
     status_counts_qs = (UserGameList.objects.filter(user=user_obj).values('status').annotate(total=Count('id')))
     status_counts = {item['status']: item['total'] for item in status_counts_qs}
     club_count = Club.objects.filter(members=user_obj).count()
+    review_count = Review.objects.filter(user=user_obj).count()
+    list_count = GameList.objects.filter(owner=user_obj).count()
 
     return render(request, 'account/detail.html', {
         'person': person,
@@ -50,6 +46,8 @@ def detail(request, user_id=None):
         'favorite_games': favorite_games_qs,
         'status_counts': status_counts,
         'club_count': club_count,
+        'review_count': review_count,
+        'list_count': list_count,
     })
 
 @login_required

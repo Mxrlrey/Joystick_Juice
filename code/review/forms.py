@@ -1,5 +1,5 @@
 from django import forms
-from .models import Review
+from .models import Review, Comment
 
 RATING_CHOICES = [
     (0.5, '0.5'),
@@ -30,4 +30,12 @@ class ReviewForm(forms.ModelForm):
         fields = ['rating', 'comment']
         widgets = {
             'comment': forms.Textarea(attrs={'rows': 3}),
+        }
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['opinion']
+        widgets = {
+            'opinion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }

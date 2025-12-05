@@ -11,5 +11,4 @@ class Person(models.Model):
     avatar_url = models.ImageField("Avatar", upload_to='perfil/', null=True, blank=True)
     bio = models.CharField("Biografia", max_length=200, null=True, blank=True)
 
-    def __str__(self):
-        return self.name
+    

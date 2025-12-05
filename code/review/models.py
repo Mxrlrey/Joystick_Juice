@@ -11,3 +11,12 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.user.username} avaliou {self.game.title} ({self.rating}/5)"
+    
+class Comment(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    opinion = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} comentou na review de {self.review}"

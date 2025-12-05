@@ -15,9 +15,7 @@
               <img src="{{ person.avatar_url.url }}" alt="Avatar de {{ user_obj.username }}"
                   class="user-avatar-img avatar-img" style="width:120px; height:120px; object-fit:cover; border-radius:50%;">
             {% else %}
-              <div class="user-avatar-default avatar-img" style="width:120px; height:120px; border-radius:50%; display:flex; align-items:center; justify-content:center;">
-                {{ user_obj.username|first|upper }}
-              </div>
+              <img src="{% static 'img/global/default-avatar.svg' %}" alt="{{ c.user.username }}" class="user-avatar-img avatar-img">
             {% endif %}
             <a href="{% url 'account_edit_avatar' %}" class="avatar-overlay" title="Editar avatar" aria-label="Editar avatar">
               <button type="button" class="btn btn-sm avatar-edit-btn">
@@ -92,14 +90,15 @@
         <div class="row g-3">
           <div class="col-sm-4">
             <div class="panel p-3 text-center">
-              <div class="h4 mb-0">0</div>
+              <!-- <a href="{% url 'user_lists' %}" class="text-decoration-none text-reset"></a> -->
+              <div class="h4 mb-0">{{ review_count|default:0 }}</div>
               <div class="small text-muted">Reviews</div>
             </div>
           </div>
           <div class="col-sm-4">
             <div class="panel p-3 text-center">
               <a href="{% url 'user_lists' %}" class="text-decoration-none text-reset">
-              <div class="h4 mb-0">{{ request.user.game_lists.count }}</div>
+              <div class="h4 mb-0">{{ list_count|default:0 }}</div>
               <div class="small text-muted">Listas</div>
               </a>
             </div>

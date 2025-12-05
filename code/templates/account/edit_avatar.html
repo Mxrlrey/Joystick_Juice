@@ -65,7 +65,7 @@
                   {% if person and person.avatar_url %}
                     <img src="{{ person.avatar_url.url }}" alt="Avatar atual de {{ user.username }}">
                   {% else %}
-                    <div class="avatar-default-preview">{{ user.username|first|upper }}</div>
+                    <img src="{% static 'img/global/default-avatar.svg' %}" alt="{{ c.user.username }}">
                   {% endif %}
                 </div>
               </div>
