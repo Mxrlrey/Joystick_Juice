@@ -386,3 +386,38 @@ def toggle_like(request, game_id):
         messages.success(request, f"Você curtiu '{game.title}'!")
 
     return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+def home_page(request):
+    # --- 1. Mais Bem Avaliados (Top Rated) ---
+    # CORRIGIDO: Adicionamos list_count (Count('usergamelist')) para que possamos usá-lo no order_by
+    top_rated_games = Game.objects.annotate(
+        avg_rating=Avg('review__rating'),
+        list_count=Count('usergamelist') # ANOTAÇÃO ADICIONADA: Usada como critério de desempate
+    ).filter(
+        avg_rating__isnull=False
+    ).order_by('-avg_rating', '-list_count')[:10]  # Ordena pela maior média, desempata pela popularidade
+
+    # --- 2. Mais Populares (Most Popular) ---
+    # Esta query já está correta, pois define e usa 'list_count'
+    popular_games_qs = Game.objects.annotate(
+        list_count=Count('usergamelist')
+    ).order_by('-list_count')
+
+    popular_games = popular_games_qs[:10]
+
+    if not popular_games.exists():
+        # Fallback para jogos aleatórios se não houver listas
+        popular_games = Game.objects.all().order_by('?')[:10]
+
+    # --- 3. Adicionados Recentemente (Recently Added) ---
+    # CORRIGIDO: 'created_at' não existe. Usando 'release_date' como substituto.
+    recent_games = Game.objects.all().order_by('-release_date')[:10]
+
+    context = {
+        'top_rated_games': top_rated_games,
+        'popular_games': popular_games,
+        'recent_games': recent_games,
+    }
+
+    return render(request, "game/home.html", context)

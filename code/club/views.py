@@ -116,6 +116,7 @@ def club_chat(request, club_id):
     }
     return render(request, 'club/chat.html', context)
 
+#List User Clubs
 @login_required
 def list_user_clubs(request, user_id):
     target_user = get_object_or_404(User, id=user_id)

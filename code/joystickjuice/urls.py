@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from game.views import home_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -11,6 +12,7 @@ urlpatterns = [
     path('review/', include('review.urls')),
     path('club/', include('club.urls')),
     path('collections/', include('collection.urls')),
+    path("", include("game.urls")),
 ]
 
 if settings.DEBUG:

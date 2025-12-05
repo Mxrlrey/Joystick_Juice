@@ -1,8 +1,10 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
+from game.views import home_page
 
 urlpatterns = [
+    path('home/', home_page, name='home'),
     path("list", views.list_games, name="list_game"),
     path('<int:game_id>/', views.game_detail, name='game_detail'),
     path('form/add/', views.create_game, name='create_game'),
@@ -16,4 +18,5 @@ urlpatterns = [
     path('game/remove/<int:game_id>/', views.remove_from_list, name='remove_from_list'),
     path("game/<int:game_id>/favorite/", views.toggle_favorite, name="toggle_favorite"),
     path("game/<int:game_id>/like/", views.toggle_like, name="toggle_like"),
+    path('', views.home_page, name='home'),
 ]
