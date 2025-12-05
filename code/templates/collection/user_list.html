@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Minhas listas | Joystick Juice{% endblock %}
+
+{% block content %}
+<div class="page-container mt-4 mb-5">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="theme-accent mb-1">Minhas listas</h1>
+      <p class="text-muted small mb-0">Organize seus jogos em coleções — públicas ou privadas.</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a href="{% url 'create_list' %}" class="btn btn-custom-accent py-2">
+        <i class="fas fa-plus-circle me-2"></i> Criar nova lista
+      </a>
+      <a href="{% url 'add_game' %}" class="btn btn-custom-outline py-2">
+        <i class="fas fa-search me-2"></i> Explorar jogos
+      </a>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-3">
+    {% for gl in user_lists %}
+      <div class="col">
+        <div class="panel list-card h-100 p-4 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h3 class="mb-1 theme-accent" style="font-size:1.15rem;">
+                <i class="fas fa-list me-2"></i>
+                <a href="{% url 'list_detail' pk=gl.pk %}" class="text-decoration-none">{{ gl.name }}</a>
+              </h3>
+              <p class="text-muted small mb-1">
+                <i class="fas fa-calendar-alt me-1"></i>
+                {{ gl.created_at|date:"d/m/Y" }}
+              </p>
+            </div>
+          </div>
+
+          <p class="text-muted flex-grow-1 mb-3">{{ gl.description|default:"Sem descrição"|truncatechars:120 }}</p>
+
+          <div class="mt-auto d-flex gap-2 align-items-center border-top pt-3">
+            <span class="ms-auto badge bg-opacity-75 text-bg-{{ gl.is_public|yesno:'success,secondary' }}">
+              {% if gl.is_public %}<i class="fas fa-globe me-1"></i> Pública{% else %}<i class="fas fa-lock me-1"></i> Privada{% endif %}
+            </span>
+            <span class="badge bg-light text-dark border ms-2 py-1"> {{ gl.items.count }} itens</span>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-primary mt-4 d-flex align-items-center gap-3">
+          <i class="fas fa-info-circle fa-2x"></i>
+          <div>
+            <strong>Você ainda não tem listas.</strong>
+            <div class="small text-muted mt-1">Crie sua primeira lista para organizar seus jogos favoritos.</div>
+            <div class="mt-2">
+                
+              <a href="{% url 'create_list' %}" class="btn btn-custom-accent btn-sm">
+                <i class="fas fa-plus me-1"></i> Criar lista
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock content %}

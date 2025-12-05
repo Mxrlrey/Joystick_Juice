@@ -1,26 +1,150 @@
+{% extends "base.html" %}
 {% load static %}
 
-{% block title %}Avaliações — Joystick Juice{% endblock %}
+{% block title %}Avaliações — {{ game.title }}{% endblock %}
 
 {% block content %}
-<h1>Avaliações de {{ game.title }}</h1>
+<main class="main-content py-4">
+  <div class="container">
+    <div class="panel shadow p-4 p-md-5 mx-auto" style="max-width: 900px;">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h1 class="h4 mb-1">Avaliações — {{ game.title }}</h1>
+          <div class="text-muted small">
+            {{ reviews_count }} avaliação{{ reviews_count|pluralize }}
+            • Última: 
+            {% if reviews_count > 0 %}
+              {{ reviews.0.created_at|date:"d/m/Y H:i" }}
+            {% else %}
+              —
+            {% endif %}
+          </div>
+        </div>
 
-<div class="review-list">
-  {% if reviews %}
-    {% for review in reviews %}
-      <div class="review-card">
-        <div class="review-info">
-          <p class="review-user"><strong>Usuário:</strong> {{ review.user.username }}</p>
-          <p class="review-score"><strong>Nota:</strong> {{ review.score }}</p>
-          <p class="review-comment">{{ review.comment }}</p>
-
-          <a href="{% url 'detail_review' review.pk %}">Ver detalhes</a>
+        <div class="text-end">
+          <div class="d-inline-block text-center">
+            <div class="fw-bold">{{ avg_rating|floatformat:1 }}/5</div>
+            <div class="rating-stars" aria-label="Avaliação média">
+              <div style="position:relative; display:inline-block; font-size:1.05rem; line-height:1;">
+                <div style="position:absolute; top:0; left:0; white-space:nowrap; overflow:hidden; width: calc({{ avg_rating|default:'0' }} / 5 * 100%);">
+                  ★★★★★
+                </div>
+                <div style="color:#ddd;">★★★★★</div>
+              </div>
+            </div>
+            <div class="small text-muted mt-1">Média</div>
+          </div>
         </div>
       </div>
-    {% endfor %}
-  {% else %}
-    <p>Este jogo ainda não possui avaliações.</p>
-  {% endif %}
-</div>
 
+      <hr>
+
+      <div class="review-list">
+        {% if reviews %}
+          <div class="row g-3">
+            {% for review in reviews %}
+              <div class="col-12">
+                <article class="card p-3 shadow-sm review-card" aria-labelledby="review-{{ review.pk }}">
+                  <div class="d-flex gap-3">
+                    <div style="width:56px; flex:0 0 56px;">
+                      <img src="{% if review.user.person.avatar_url %}{{ review.user.person.avatar_url.url }}{% else %}{% static 'img/avatar-placeholder.png' %}{% endif %}"
+     alt="Avatar de {{ review.user.username }}"
+     class="rounded-circle img-fluid" style="width:56px; height:56px; object-fit:cover;">
+
+                    </div>
+
+                    <div class="flex-grow-1">
+                      <header class="d-flex justify-content-between align-items-start mb-1">
+                        <div>
+                          <h3 id="review-{{ review.pk }}" class="h6 mb-0">
+                            {{ review.user.get_full_name|default:review.user.username }}
+                          </h3>
+                          <div class="small text-muted">
+                            {{ review.created_at|date:"d/m/Y H:i" }}
+                          </div>
+                        </div>
+
+                        <div class="text-end">
+                          <div class="fw-bold">{{ review.rating }}/5</div>
+                          <div style="position:absolute; top:0; left:0; overflow:hidden; width: calc({{ review.rating|default:'0' }} / 5 * 100%);"></div>                            
+                            </div>
+                          </div>
+                        </div>
+                      </header>
+
+                      <div class="review-comment mt-2" style="white-space:pre-wrap;">
+                        {{ review.comment|default:"—" }}
+                      </div>
+
+                      <footer class="mt-3 d-flex gap-2 align-items-center">
+                        <a href="{% url 'detail_review' review.pk %}" class="btn btn-sm btn-outline-primary">Ver detalhes</a>
+
+                        {% if request.user.is_authenticated %}
+                          {% if request.user == review.user or request.user.is_staff %}
+                            <a href="{% url 'edit_review' review.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                            <form method="post" action="{% url 'delete_review' review.pk %}" style="display:inline;">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-sm btn-outline-danger"
+                                      onclick="return confirm('Remover avaliação?')">Remover</button>
+                            </form>
+                          {% endif %}
+                        {% endif %}
+                      </footer>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            {% endfor %}
+          </div>
+
+          {% if page_obj %}
+            <nav class="mt-4" aria-label="Paginação de avaliações">
+              <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Página anterior">‹</a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled"><span class="page-link">‹</span></li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                  {% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+                    {% if num == page_obj.number %}
+                      <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span></li>
+                    {% else %}
+                      <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Próxima página">›</a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled"><span class="page-link">›</span></li>
+                {% endif %}
+              </ul>
+            </nav>
+          {% endif %}
+
+        {% else %}
+          <div class="text-center py-5 text-muted">
+            <p class="mb-2">Este jogo ainda não possui avaliações.</p>
+            {% if request.user.is_authenticated %}
+              <a href="{% url 'add_review' game.pk %}" class="btn btn-primary">Seja o primeiro a avaliar</a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</main>
+
+<style>
+  .review-card { border-radius: 10px; }
+  .rating-stars .stars-outer { color: #ffd055; }
+  .rating-stars .stars-inner { color: #ffd055; }
+</style>
 {% endblock %}

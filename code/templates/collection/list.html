@@ -1,40 +1,62 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
 
-{% block title %}Minhas Listas / Listas Públicas{% endblock %}
+{% block title %}Listas públicas | Joystick Juice{% endblock title %}
 
 {% block content %}
-<div class="container">
-  <h1>Listas</h1>
-
-  <p>
-    <a class="btn btn-primary" href="{% url 'create_list' %}">Criar nova lista</a>
-  </p>
-
-  {% if lists %}
-    <div class="list-group">
-      {% for gl in lists %}
-        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-           href="{% url 'view_list' gl.id %}">
-          <div>
-            <strong>{{ gl.name }}</strong>
-            <div class="small text-muted">por {{ gl.owner }} — {{ gl.created_at|date:"d/m/Y" }}</div>
-            {% if gl.description %}
-              <div class="mt-1">{{ gl.description|truncatechars:140 }}</div>
-            {% endif %}
-          </div>
-          <div class="text-end">
-            {% if user.is_authenticated and gl.owner == user %}
-              <a class="btn btn-sm btn-outline-secondary me-1" href="{% url 'edit_list' gl.id %}">Editar</a>
-              <a class="btn btn-sm btn-outline-danger" href="{% url 'delete_list' gl.id %}">Deletar</a>
-            {% endif %}
-            <div class="small text-muted mt-2">{{ gl.items.count }} itens</div>
-          </div>
-        </a>
-      {% endfor %}
+<div class="page-container mt-4 mb-5">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="theme-accent mb-1">Listas públicas</h1>
+      <p class="text-muted small mb-0">Explore coleções públicas feitas por outros usuários.</p>
     </div>
-  {% else %}
-    <p>Nenhuma lista encontrada.</p>
-  {% endif %}
+    <div>
+      <a href="{% url 'create_list' %}" class="btn btn-custom-accent py-2">
+        <i class="fas fa-plus-circle me-2"></i> Criar lista
+      </a>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="row row-cols-1 row-cols-md-2 g-4 mt-3">
+    {% for gl in public_others %}
+      <div class="col">
+        <div class="panel list-card h-100 p-3 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h4 class="mb-1">
+                <a href="{% url 'list_detail' pk=gl.pk %}" class="text-decoration-none">{{ gl.name }}</a>
+              </h4>
+              <div class="small text-muted">Por <strong>{{ gl.owner }}</strong> • {{ gl.items.count }} itens</div>
+            </div>
+            <div class="text-end small text-muted">{{ gl.created_at|date:"d/m/Y" }}</div>
+          </div>
+
+          <p class="text-muted flex-grow-1 mb-3">{{ gl.description|truncatechars:140 }}</p>
+
+          <div class="mt-auto d-flex align-items-center gap-2">
+            <a href="{% url 'list_detail' pk=gl.pk %}" class="btn btn-custom-outline btn-sm">
+              <i class="fas fa-eye me-1"></i> Ver
+            </a>
+
+            {% if request.user.is_authenticated and request.user != gl.owner %}
+              {% comment %} opcional: seguir autor/curtir lista {% endcomment %}
+              <a href="{% url 'toggle_favorite' game_id=gl.owner.pk %}" class="btn btn-sm btn-outline-primary ms-auto">
+                <i class="fas fa-star me-1"></i> Seguir autor
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-secondary mt-2">
+          Nenhuma lista pública disponível no momento.
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 </div>
-{% endblock %}
+{% endblock content %}

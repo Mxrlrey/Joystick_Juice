@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from game.models import Game  # assumindo app game.Game
+from game.models import Game
 
 User = settings.AUTH_USER_MODEL
 
@@ -21,7 +21,6 @@ class GameList(models.Model):
 class GameListItem(models.Model):
     list = models.ForeignKey(GameList, on_delete=models.CASCADE, related_name="items")
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    note = models.CharField(max_length=200, blank=True)
     added_at = models.DateTimeField(auto_now_add=True)
     order = models.PositiveIntegerField(default=0)
 

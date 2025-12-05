@@ -5,13 +5,13 @@ from django.contrib import messages
 from .models import Review
 from .forms import ReviewForm
 from game.models import Game
+from django.db.models import Avg
 
 @login_required
 def create_review(request, game_id):
 
     game = get_object_or_404(Game, pk=game_id)
 
-    # ---------- PROCESSAMENTO NORMAL ----------
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
@@ -34,10 +34,12 @@ def create_review(request, game_id):
 def list_reviews(request, game_id):
     game = get_object_or_404(Game, id=game_id)
     reviews = Review.objects.filter(game=game).order_by('-created_at')
+    avg_rating = reviews.aggregate(avg=Avg('rating'))['avg'] or 0
 
     return render(request, 'review/list.html', {
         'game': game,
-        'reviews': reviews
+        'reviews': reviews,
+        'avg_rating': avg_rating
     })
 
 def review_detail(request, pk):
@@ -72,7 +74,7 @@ def delete_review(request, pk):
         game_id = review.game.pk
         review.delete()
         messages.success(request, "Avaliação removida.")
-        return redirect('game_detail', game_id=game_id) #consertar depois para mostrar a página de detalhes do jogo quando estiver pronta
+        return redirect('game_detail', game_id=game_id)
 
     return render(request, "review/form.html", {
     "review": review,

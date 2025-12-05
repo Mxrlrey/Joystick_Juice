@@ -1,168 +1,168 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.http import Http404, HttpResponseForbidden
+from django.contrib import messages
 
 from .models import GameList, GameListItem
 from .forms import GameListForm, GameListItemForm
 from game.models import Game
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+import json
+
+def user_is_owner(obj, user):
+    return hasattr(obj, "owner") and obj.owner == user
 
 
-def list_lists(request):
+@login_required
+def user_lists(request):
     """
-    Lista listas públicas e, se logado, também as suas próprias.
+    Renderiza collection/user_list.html e fornece 'user_lists' no contexto.
     """
-    public_lists = GameList.objects.filter(is_public=True).order_by('-created_at')
+    user_lists = GameList.objects.filter(owner=request.user).order_by('-created_at')
+
+    context = {
+        "user_lists": user_lists,
+    }
+    return render(request, "collection/user_list.html", context)
+
+def public_lists(request):
+    """
+    Mostra somente as listas públicas de outros usuários.
+    """
+    lists = GameList.objects.filter(is_public=True)
+
     if request.user.is_authenticated:
-        own_lists = GameList.objects.filter(owner=request.user).order_by('-created_at')
-        lists = (public_lists | own_lists).distinct()
-    else:
-        lists = public_lists
+        lists = lists.exclude(owner=request.user)
 
-    return render(request, 'collection/list.html', {'lists': lists})
-
-
-def list_detail(request, pk):
-    """
-    Mostra uma lista e seus itens. Se for privada, apenas o dono vê.
-    """
-    gamelist = get_object_or_404(GameList, pk=pk)
-
-    if not gamelist.is_public and (not request.user.is_authenticated or gamelist.owner != request.user):
-        return redirect('list_list')
-
-    items = gamelist.items.select_related('game').all().order_by('order', '-added_at')
-
-    item_form = None
-    if request.user.is_authenticated and gamelist.owner == request.user:
-        item_form = GameListItemForm()
-
-    return render(request, 'collection/detail.html', {
-        'gamelist': gamelist,
-        'items': items,
-        'item_form': item_form,
-    })
+    context = {
+        "lists": lists,
+    }
+    return render(request, "collection/list.html", context)
 
 
 @login_required
 def create_list(request):
-    """
-    Cria uma nova GameList (POST cria, GET mostra form).
-    """
-    if request.method == 'POST':
+    """Create a new GameList (owner = request.user)."""
+    if request.method == "POST":
         form = GameListForm(request.POST)
         if form.is_valid():
-            gamelist = form.save(commit=False)
-            gamelist.owner = request.user
-            gamelist.save()
-            return redirect('list_detail', pk=gamelist.pk)
+            new_list = form.save(commit=False)
+            new_list.owner = request.user
+            new_list.save()
+            messages.success(request, "Lista criada com sucesso.")
+            return redirect("list_detail", pk=new_list.pk)
     else:
         form = GameListForm()
+    return render(request, "collection/form.html", {"form": form})
 
-    return render(request, 'collection/form.html', {'form': form, 'gamelist': None})
+
+@login_required
+def list_detail(request, pk):
+    """Show a list and its items. Only owner or public lists visible."""
+    game_list = get_object_or_404(GameList, pk=pk)
+    if not game_list.is_public and not user_is_owner(game_list, request.user):
+        raise Http404()
+    items = game_list.items.select_related("game").all()
+    return render(request, "collection/detail.html", {"list": game_list, "items": items})
 
 
 @login_required
 def edit_list(request, pk):
-    """
-    Edita uma lista (apenas dono).
-    """
-    gamelist = get_object_or_404(GameList, pk=pk, owner=request.user)
+    """Edit a GameList (only owner)."""
+    game_list = get_object_or_404(GameList, pk=pk)
+    if not user_is_owner(game_list, request.user):
+        return HttpResponseForbidden("Você não tem permissão para editar esta lista.")
 
-    if request.method == 'POST':
-        form = GameListForm(request.POST, instance=gamelist)
+    if request.method == "POST":
+        form = GameListForm(request.POST, instance=game_list)
         if form.is_valid():
             form.save()
-            return redirect('list_detail', pk=pk)
+            messages.success(request, "Lista atualizada.")
+            return redirect("list_detail", pk=game_list.pk)
     else:
-        form = GameListForm(instance=gamelist)
-
-    return render(request, 'collection/form.html', {'form': form, 'gamelist': gamelist})
+        form = GameListForm(instance=game_list)
+    return render(request, "collection/form.html", {"form": form, "list": game_list})
 
 
 @login_required
 def delete_list(request, pk):
-    """
-    Confirma e deleta uma lista (apenas POST deleta).
-    """
-    gamelist = get_object_or_404(GameList, pk=pk, owner=request.user)
+    """Delete a GameList (only owner). Confirm via POST."""
+    game_list = get_object_or_404(GameList, pk=pk)
+    if not user_is_owner(game_list, request.user):
+        return HttpResponseForbidden("Você não tem permissão para deletar esta lista.")
 
-    if request.method == 'POST':
-        gamelist.delete()
-        return redirect('list_list')
-
-    return render(request, 'collection/form.html', {'gamelist': gamelist})
-
+    if request.method == "POST":
+        game_list.delete()
+        messages.success(request, "Lista deletada.")
+        return redirect("user_lists")
+    return render(request, "collection/form.html", {"list": game_list})
 
 @login_required
 def add_item(request, list_pk):
-    """
-    Adiciona um item (jogo) à lista (apenas dono).
-    """
-    gamelist = get_object_or_404(GameList, pk=list_pk, owner=request.user)
+    """Add an item to a list. list_pk required in URL."""
+    game_list = get_object_or_404(GameList, pk=list_pk)
+    if not user_is_owner(game_list, request.user):
+        return HttpResponseForbidden("Você não tem permissão para adicionar itens a esta lista.")
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = GameListItemForm(request.POST)
         if form.is_valid():
             item = form.save(commit=False)
-            item.list = gamelist
-            item.save()
-    return redirect('list_detail', pk=list_pk)
+            item.list = game_list
+            try:
+                item.save()
+                messages.success(request, "Item adicionado à lista.")
+            except Exception as e:
+                messages.error(request, f"Não foi possível adicionar: {e}")
+            return redirect("list_detail", pk=list_pk)
+    else:
+        form = GameListItemForm()
+    return render(request, "collection/form.html", {"form": form, "list": game_list})
 
 
 @login_required
 def edit_item(request, list_pk, item_pk):
-    """
-    Edita um item da lista (nota, ordem, etc.).
-    """
-    gamelist = get_object_or_404(GameList, pk=list_pk, owner=request.user)
-    item = get_object_or_404(GameListItem, pk=item_pk, list=gamelist)
+    """Edit an item in a list (only owner of the list)."""
+    game_list = get_object_or_404(GameList, pk=list_pk)
+    if not user_is_owner(game_list, request.user):
+        return HttpResponseForbidden("Você não tem permissão para editar itens desta lista.")
 
-    if request.method == 'POST':
+    item = get_object_or_404(GameListItem, pk=item_pk, list=game_list)
+
+    if request.method == "POST":
         form = GameListItemForm(request.POST, instance=item)
         if form.is_valid():
             form.save()
-            return redirect('list_detail', pk=list_pk)
+            messages.success(request, "Item atualizado.")
+            return redirect("list_detail", pk=list_pk)
     else:
         form = GameListItemForm(instance=item)
-
-    return render(request, 'collection/form.html', {'form': form, 'gamelist': gamelist, 'item': item})
+    return render(request, "collection/form.html", {"form": form, "list": game_list, "item": item})
 
 
 @login_required
 def remove_item(request, list_pk, item_pk):
-    """
-    Pagina de confirmação e remoção do item (apenas POST remove).
-    """
-    gamelist = get_object_or_404(GameList, pk=list_pk, owner=request.user)
-    item = get_object_or_404(GameListItem, pk=item_pk, list=gamelist)
+    """Remove an item from a list (only owner). Confirm via POST."""
+    game_list = get_object_or_404(GameList, pk=list_pk)
+    if not user_is_owner(game_list, request.user):
+        return HttpResponseForbidden("Você não tem permissão para remover itens desta lista.")
 
-    if request.method == 'POST':
+    item = get_object_or_404(GameListItem, pk=item_pk, list=game_list)
+    if request.method == "POST":
         item.delete()
-        return redirect('list_detail', pk=list_pk)
+        messages.success(request, "Item removido.")
+        return redirect("list_detail", pk=list_pk)
+    return render(request, "collection/form.html", {"item": item, "list": game_list})
 
-    return render(request, 'collection/form.html', {'gamelist': gamelist, 'item': item})
 
+@require_POST
+def reorder_list(request, list_pk):
+    data = json.loads(request.body)
+    order = data.get("order", [])
 
-@login_required
-def quick_toggle_favorite(request, game_id):
-    """
-    Marca/desmarca um jogo na lista 'Favoritos' do usuário.
-    Se a lista 'Favoritos' não existir, é criada aqui (is_public=False).
-    Operação sem mensagens; apenas redirect para a página do jogo.
-    """
-    game = get_object_or_404(Game, pk=game_id)
-    user = request.user
+    for index, item_id in enumerate(order):
+        GameListItem.objects.filter(pk=item_id, list_id=list_pk).update(order=index)
 
-    fav_list, _created = GameList.objects.get_or_create(
-        owner=user,
-        name='Favoritos',
-        defaults={'is_public': False}
-    )
-
-    existing = GameListItem.objects.filter(list=fav_list, game=game).first()
-    if existing:
-        existing.delete()
-    else:
-        # cria o item; supondo que GameListItem tem campos: list, game, note(optional), order(optional)
-        GameListItem.objects.create(list=fav_list, game=game)
-
-    return redirect('game_detail', pk=game.pk)
+    return JsonResponse({"status": "ok"})

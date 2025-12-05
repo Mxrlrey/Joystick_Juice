@@ -98,8 +98,10 @@
           </div>
           <div class="col-sm-4">
             <div class="panel p-3 text-center">
-              <div class="h4 mb-0">0</div>
+              <a href="{% url 'user_lists' %}" class="text-decoration-none text-reset">
+              <div class="h4 mb-0">{{ request.user.game_lists.count }}</div>
               <div class="small text-muted">Listas</div>
+              </a>
             </div>
           </div>
           <div class="col-sm-4">

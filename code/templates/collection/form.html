@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+  {% if request.resolver_match.url_name == "create_list" %}Criar Lista
+  {% elif request.resolver_match.url_name == "edit_list" %}Editar Lista
+  {% elif request.resolver_match.url_name == "delete_list" %}Excluir Lista
+  {% elif request.resolver_match.url_name == "add_item" %}Adicionar Item
+  {% elif request.resolver_match.url_name == "edit_item" %}Editar Item
+  {% elif request.resolver_match.url_name == "remove_item" %}Remover Item
+  {% else %}Formulário
+  {% endif %}
+  | Joystick Juice
+{% endblock %}
+
+{% block content %}
+<main class="main-content flex-grow-1 d-flex align-items-center justify-content-center">
+
+  <div class="page-container">
+    <div class="panel shadow p-4 p-md-5 mx-auto" style="max-width: 600px;">
+
+      <h1 class="mb-4 theme-accent">
+        {% if request.resolver_match.url_name == "create_list" %}
+           Criar Lista
+        {% elif request.resolver_match.url_name == "edit_list" %}
+           Editar Lista
+        {% elif request.resolver_match.url_name == "delete_list" %}
+           Excluir Lista
+        {% elif request.resolver_match.url_name == "add_item" %}
+           Adicionar Item
+        {% elif request.resolver_match.url_name == "edit_item" %}
+           Editar Item
+        {% elif request.resolver_match.url_name == "remove_item" %}
+           Remover Item
+        {% endif %}
+      </h1>
+
+      <hr>
+
+      <form method="post">
+        {% csrf_token %}
+
+        {# Mostrar campos em create/edit/add_item/edit_item #}
+        {% if request.resolver_match.url_name in "create_list edit_list add_item edit_item" %}
+          {% if form %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+              <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+
+                {{ field|add_class:"form-control form-control-lg bg-deep" }}
+
+                {% for error in field.errors %}
+                  <div class="text-danger mt-1">
+                    <i class="fas fa-exclamation-circle me-1"></i> {{ error }}
+                  </div>
+                {% endfor %}
+
+                {% if field.help_text %}
+                  <div class="form-text text-muted">{{ field.help_text }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endif %}
+
+        {# CONFIRMAÇÃO DELETE LIST #}
+        {% if request.resolver_match.url_name == "delete_list" %}
+          <div class="alert alert-danger text-center mb-4" role="alert">
+            <h4 class="alert-heading text-danger">
+              <i class="fas fa-exclamation-triangle me-2"></i> Confirmação
+            </h4>
+            <p class="mb-0">
+              Tem certeza que deseja <strong>excluir permanentemente</strong> a lista
+              "<strong>{{ list.name }}</strong>"? Esta ação <strong>removerá todos os itens</strong> e não pode ser desfeita.
+            </p>
+          </div>
+        {% endif %}
+
+        {# CONFIRMAÇÃO REMOVE ITEM #}
+        {% if request.resolver_match.url_name == "remove_item" %}
+          <div class="alert alert-danger text-center mb-4" role="alert">
+            <h4 class="alert-heading text-danger">
+              <i class="fas fa-exclamation-triangle me-2"></i> Confirmação
+            </h4>
+            <p class="mb-2">Tem certeza que deseja <strong>remover este item</strong> da lista?</p>
+            <p class="mb-0">
+              <strong>Jogo:</strong> {{ item.game.title }}<br>
+              <strong>Lista:</strong> {{ list.name }}
+            </p>
+          </div>
+        {% endif %}
+
+        <div class="d-grid mt-4">
+          {% if request.resolver_match.url_name == "create_list" %}
+            <button type="submit" class="btn btn-primary btn-lg py-2">
+              <i class="fas fa-plus-circle me-2"></i> Criar
+            </button>
+          {% elif request.resolver_match.url_name == "edit_list" or request.resolver_match.url_name == "edit_item" %}
+            <button type="submit" class="btn btn-primary btn-lg py-2">
+              <i class="fas fa-save me-2"></i> Salvar Alterações
+            </button>
+          {% elif request.resolver_match.url_name == "add_item" %}
+            <button type="submit" class="btn btn-primary btn-lg py-2">
+              <i class="fas fa-plus me-2"></i> Adicionar Item
+            </button>
+          {% elif request.resolver_match.url_name == "delete_list" or request.resolver_match.url_name == "remove_item" %}
+            <button type="submit" class="btn btn-custom-danger btn-lg py-2">
+              <i class="fas fa-trash-alt me-2"></i> Confirmar Exclusão
+            </button>
+          {% else %}
+            <button type="submit" class="btn btn-primary btn-lg py-2">
+              Salvar
+            </button>
+          {% endif %}
+        </div>
+      </form>
+
+      <hr class="mt-4">
+
+      <div class="text-center">
+        {# volta para a lista do usuário ou referer como fallback #}
+        <a href="{{ request.META.HTTP_REFERER|default:'#' }}" class="btn btn-custom-light mt-2">
+          <i class="fas fa-arrow-left me-2"></i> Voltar
+        </a>
+      </div>
+
+    </div>
+  </div>
+</main>
+{% endblock %}

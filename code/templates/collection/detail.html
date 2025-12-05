@@ -1,81 +1,225 @@
 {% extends "base.html" %}
-{% load static %}
-
-{% block title %}{{ gamelist.name }}{% endblock %}
+{% block title %}{{ list.name }}{% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="d-flex justify-content-between align-items-start">
-    <div>
-      <h1>{{ gamelist.name }}</h1>
-      <div class="small text-muted">por {{ gamelist.owner }} — {{ gamelist.created_at|date:"d/m/Y" }}</div>
-      {% if gamelist.description %}
-        <p class="mt-2">{{ gamelist.description }}</p>
-      {% endif %}
+<style>
+  .page-center {
+    display: flex;
+    justify-content: center;
+  }
+  .list-wrapper {
+    width: 100%;
+    max-width: 980px; /* controla a largura centralizada */
+  }
+  .hero-gradient{
+    background: linear-gradient(90deg, rgba(13,110,253,0.06), rgba(102,16,242,0.02));
+    border-radius: .5rem;
+  }
+  .muted-sm { color: #6c757d; font-size: .92rem; }
+
+  /* grid de jogos */
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .game-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 10px;
+    overflow: hidden;
+    background: transparent !important; /* remove fundo branco */
+    border: none !important; /* remove borda branca */
+    transition: transform .12s ease, box-shadow .12s ease;
+    padding: 0;
+}
+.game-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.15);
+}
+
+  .game-thumb {
+    width: 100%;
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+  }
+  .game-thumb.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f7;
+    color: #888;
+    font-size: 1.6rem;
+    height: 130px;
+  }
+
+  .game-info {
+    padding: 0.75rem 0.9rem;
+    border-top: 1px solid rgba(0,0,0,0.03);
+  }
+  .game-title { font-weight: 600; font-size: 0.98rem; line-height: 1.1; }
+  .game-sub { font-size: 0.85rem; color: #6c757d; margin-top: 0.25rem; }
+
+  /* wrapper do header/actions */
+  .list-actions { display:flex; gap:.5rem; align-items:center; }
+  .meta-badges { gap:.5rem; display:flex; align-items:center; flex-wrap:wrap; }
+
+  /* botões de editar/remover alinhados à direita de cada card (small) */
+  .card-actions {
+    display:flex;
+    gap:0.4rem;
+    padding: 0.5rem 0.8rem;
+    align-items:center;
+    justify-content:flex-end;
+  }
+  .card-actions .btn { padding: .25rem .5rem; font-size:.82rem; }
+
+  @media (max-width: 576px) {
+    .game-thumb { height: 110px; }
+  }
+
+  .btn-fav-active {
+    background: rgba(255, 179, 102, 0.25) !important;
+    border-color: #ffb366 !important;
+    color: #ffb366 !important;
+    transform: scale(1.07);
+}
+.dragging {
+    opacity: .6;
+    transform: scale(.95);
+}
+</style>
+
+<div class="container mt-4 page-center">
+  <div class="list-wrapper">
+
+    <!-- Voltar -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <a href="{% url 'user_lists' %}" class="btn btn-outline-secondary btn-sm">
+          <i class="fas fa-arrow-left me-1"></i> Voltar às minhas listas
+        </a>
+      </div>
+      <div class="list-actions">
+        {% if request.user == list.owner %}
+          <a href="{% url 'add_item' list_pk=list.pk %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus me-1"></i> Adicionar item
+          </a>
+          <a href="{% url 'edit_list' pk=list.pk %}" class="btn btn-outline-primary btn-sm">Editar lista</a>
+          <a href="{% url 'delete_list' pk=list.pk %}" class="btn btn-outline-danger btn-sm">Excluir lista</a>
+        {% endif %}
+      </div>
     </div>
 
-    <div class="text-end">
-      {% if user.is_authenticated and gamelist.owner == user %}
-        <a class="btn btn-sm btn-outline-secondary" href="{% url 'edit_list' gamelist.id %}">Editar</a>
-        <a class="btn btn-sm btn-outline-danger" href="{% url 'delete_list' gamelist.id %}">Excluir</a>
-      {% endif %}
-      <p class="mt-2"><strong>{{ items|length }}</strong> itens</p>
+    <!-- Cabeçalho da lista -->
+    <div class="p-3 hero-gradient rounded mb-3">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h2 class="mb-1 fw-bold">{{ list.name }}</h2>
+
+           <div class="d-flex flex-wrap gap-2 align-items-center">
+              <small class="muted-sm">Criada por <strong>{{ list.owner }}</strong></small>
+              <small class="text-muted">•</small>
+              <small class="muted-sm">{{ list.created_at|date:"d/m/Y" }}</small>
+
+            <div class="meta-badges">
+               <span class="badge bg-{{ list.is_public|yesno:'success,secondary' }} ms-1">
+               {% if list.is_public %}Pública{% else %}Privada{% endif %}
+                </span>
+                 <span class="badge bg-light text-dark border ms-1">Itens: {{ items|length }}</span>
+            </div>
     </div>
+
+  {% if list.description %}
+    <p class="mt-2 mb-0 text-muted">{{ list.description }}</p>
+  {% endif %}
+</div>   
+      </div>
+    </div>
+
+    <!-- Grid de jogos -->
+    {% if items %}
+      <div class="games-grid">
+        {% for it in items %}
+          {# cada card é um link para game_detail #}
+          <div class="d-flex flex-column item-card" data-item-id="{{ it.pk }}" style="background:transparent;">
+            <a href="{% url 'game_detail' it.game.id %}" class="game-card">
+              {% if it.game.cover_url %}
+                <div class="game-thumb" style="background-image: url('{{ it.game.cover_url }}');"></div>
+              {% else %}
+                <div class="game-thumb placeholder">
+                  <i class="fas fa-gamepad"></i>
+                </div>
+              {% endif %}
+              <div class="game-info">
+                <div class="game-title">{{ it.game.title }}</div>
+                {% if it.game.genre %}
+                  <div class="game-sub">{{ it.game.genre }}</div>
+                {% endif %}
+              </div>
+            </a>
+
+            {# ações pequenas sob o card (só para o dono da lista) #}
+            <div class="card-actions">
+              {% if request.user == list.owner %}
+                <a href="{% url 'edit_item' list_pk=list.pk item_pk=it.pk %}" class="btn btn-sm btn-outline-secondary">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'remove_item' list_pk=list.pk item_pk=it.pk %}" class="btn btn-sm btn-outline-danger">
+                  <i class="fas fa-trash-alt"></i>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="card border-0 rounded-3 shadow-sm p-4 text-center mt-3">
+        <h6 class="mb-2">Nenhum item ainda</h6>
+        <p class="text-muted mb-3">Adicione jogos a esta lista para começar.</p>
+        {% if request.user == list.owner %}
+          <a href="{% url 'add_item' list_pk=list.pk %}" class="btn btn-primary btn-sm">Adicionar primeiro item</a>
+        {% endif %}
+      </div>
+    {% endif %}
+
   </div>
 
-  <hr>
-
-  <h3>Itens</h3>
-  {% if items %}
-    <ul class="list-group mb-3">
-      {% for item in items %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <div>
-            <a href="{% url 'game_detail' item.game.id %}">{{ item.game.title }}</a>
-            {% if item.note %}
-              <div class="small text-muted">Nota: {{ item.note }}</div>
-            {% endif %}
-            <div class="small text-muted">Adicionado: {{ item.added_at|date:"d/m/Y H:i" }}</div>
-          </div>
-
-          <div class="btn-group btn-group-sm">
-            {% if user.is_authenticated and gamelist.owner == user %}
-              <a class="btn btn-outline-secondary" href="{% url 'edit_item' gamelist.id item.id %}">Editar</a>
-              <a class="btn btn-outline-danger" href="{% url 'remove_from_list' gamelist.id item.id %}">Remover</a>
-            {% endif %}
-            <a class="btn btn-outline-primary" href="{% url 'toggle_favorite' item.game.id %}">Toggle Favorito</a>
-          </div>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>Essa lista ainda não tem itens.</p>
-  {% endif %}
-
-  {% if user.is_authenticated and gamelist.owner == user %}
-    <hr>
-    <h4>Adicionar item</h4>
-    {# Form simples: espera que sua view add_item aceite POST em URL add_item(list_id, game_id) #}
-    <form method="post" action="{% url 'add_item' gamelist.id 0 %}" onsubmit="event.preventDefault(); this.action=this.action.replace('/0/','/' + this.querySelector('[name=game_id]').value + '/'); this.submit();">
-      {% csrf_token %}
-      <div class="row g-2">
-        <div class="col-md-4">
-          <input name="game_id" type="number" class="form-control" placeholder="ID do jogo (ex: 12)" required>
-        </div>
-        <div class="col-md-4">
-          <input name="note" class="form-control" placeholder="Nota / comentário (opcional)">
-        </div>
-        <div class="col-md-2">
-          <input name="order" type="number" class="form-control" placeholder="Ordem" min="0">
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-success w-100">Adicionar</button>
-        </div>
-      </div>
-      <div class="small text-muted mt-2">Você também pode adicionar a partir da página de detalhe do jogo.</div>
-    </form>
-  {% endif %}
-
-  <p class="mt-4"><a href="{% url 'lists' %}">← Voltar para todas as listas</a></p>
 </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const grid = document.querySelector(".games-grid");
+    if (!grid) return;
+
+    Sortable.create(grid, {
+        animation: 150,
+        ghostClass: "dragging",
+        handle: ".game-card",
+
+        onEnd: function () {
+            const ids = [...document.querySelectorAll(".item-card")]
+                .map(el => el.dataset.itemId);
+
+            fetch("{% url 'reorder_list' list_pk=list.pk %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ order: ids })
+            });
+        }
+    });
+});
+</script>
+
+
 {% endblock %}
