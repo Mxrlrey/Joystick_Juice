@@ -389,17 +389,13 @@ def toggle_like(request, game_id):
 
 
 def home_page(request):
-    # --- 1. Mais Bem Avaliados (Top Rated) ---
-    # CORRIGIDO: Adicionamos list_count (Count('usergamelist')) para que possamos usá-lo no order_by
     top_rated_games = Game.objects.annotate(
         avg_rating=Avg('review__rating'),
-        list_count=Count('usergamelist') # ANOTAÇÃO ADICIONADA: Usada como critério de desempate
+        list_count=Count('usergamelist')
     ).filter(
         avg_rating__isnull=False
-    ).order_by('-avg_rating', '-list_count')[:10]  # Ordena pela maior média, desempata pela popularidade
+    ).order_by('-avg_rating', '-list_count')[:10]
 
-    # --- 2. Mais Populares (Most Popular) ---
-    # Esta query já está correta, pois define e usa 'list_count'
     popular_games_qs = Game.objects.annotate(
         list_count=Count('usergamelist')
     ).order_by('-list_count')
@@ -407,11 +403,8 @@ def home_page(request):
     popular_games = popular_games_qs[:10]
 
     if not popular_games.exists():
-        # Fallback para jogos aleatórios se não houver listas
         popular_games = Game.objects.all().order_by('?')[:10]
 
-    # --- 3. Adicionados Recentemente (Recently Added) ---
-    # CORRIGIDO: 'created_at' não existe. Usando 'release_date' como substituto.
     recent_games = Game.objects.all().order_by('-release_date')[:10]
 
     context = {
