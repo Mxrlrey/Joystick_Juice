@@ -409,6 +409,7 @@ def home_page(request):
     ).order_by('-list_count')
 
     popular_games = popular_games_qs[:10]
+    all_games = Game.objects.all()
 
     if not popular_games.exists():
         popular_games = Game.objects.all().order_by('?')[:10]
@@ -419,6 +420,7 @@ def home_page(request):
         'top_rated_games': top_rated_games,
         'popular_games': popular_games,
         'recent_games': recent_games,
+        'all_games': all_games,
     }
 
     return render(request, "game/home.html", context)

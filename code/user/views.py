@@ -45,7 +45,6 @@ def detail(request, user_id=None):
         'favorite_games': favorite_games_qs,
         'status_counts': status_counts,
         'club_count': club_count,
-        'review_count': review_count,
         'list_count': list_count,
     })
 
