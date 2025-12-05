@@ -37,7 +37,7 @@ def public_lists(request):
         lists = lists.exclude(owner=request.user)
 
     context = {
-        "lists": lists,
+        "public_others": lists,
     }
     return render(request, "collection/list.html", context)
 

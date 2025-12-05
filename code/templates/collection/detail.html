@@ -100,10 +100,27 @@
     <!-- Voltar -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
-        <a href="{% url 'user_lists' %}" class="btn btn-outline-secondary btn-sm">
-          <i class="fas fa-arrow-left me-1"></i> Voltar às minhas listas
-        </a>
-      </div>
+  {% if request.META.HTTP_REFERER %}
+    {% if "public/" in request.META.HTTP_REFERER %}
+      <a href="{% url 'public_lists' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1"></i> Voltar às listas públicas
+      </a>
+    {% elif "mine/" in request.META.HTTP_REFERER %}
+      <a href="{% url 'user_lists' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1"></i> Voltar às minhas listas
+      </a>
+    {% else %}
+      <a href="{% url 'user_lists' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1"></i> Voltar
+      </a>
+    {% endif %}
+  {% else %}
+    <a href="{% url 'user_lists' %}" class="btn btn-outline-secondary btn-sm">
+      <i class="fas fa-arrow-left me-1"></i> Voltar
+    </a>
+  {% endif %}
+</div>
+
       <div class="list-actions">
         {% if request.user == list.owner %}
           <a href="{% url 'add_item' list_pk=list.pk %}" class="btn btn-primary btn-sm">
@@ -196,28 +213,30 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const grid = document.querySelector(".games-grid");
-    if (!grid) return;
+    {% if request.user == list.owner %}
+        const grid = document.querySelector(".games-grid");
+        if (!grid) return;
 
-    Sortable.create(grid, {
-        animation: 150,
-        ghostClass: "dragging",
-        handle: ".game-card",
+        Sortable.create(grid, {
+            animation: 150,
+            ghostClass: "dragging",
+            handle: ".game-card",
 
-        onEnd: function () {
-            const ids = [...document.querySelectorAll(".item-card")]
-                .map(el => el.dataset.itemId);
+            onEnd: function () {
+                const ids = [...document.querySelectorAll(".item-card")]
+                    .map(el => el.dataset.itemId);
 
-            fetch("{% url 'reorder_list' list_pk=list.pk %}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": "{{ csrf_token }}"
-                },
-                body: JSON.stringify({ order: ids })
-            });
-        }
-    });
+                fetch("{% url 'reorder_list' list_pk=list.pk %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({ order: ids })
+                });
+            }
+        });
+    {% endif %}
 });
 </script>
 

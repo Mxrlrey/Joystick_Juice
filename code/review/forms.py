@@ -16,9 +16,14 @@ RATING_CHOICES = [
 
 class ReviewForm(forms.ModelForm):
     rating = forms.TypedChoiceField(
-    choices=RATING_CHOICES,
-    coerce=float
+        choices=RATING_CHOICES,
+        coerce=float,
+        widget=forms.Select(attrs={'class': 'form-select form-select-lg'})
     )
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 3, 'class': 'form-control form-control-lg'})
+    )
+
 
     class Meta:
         model = Review

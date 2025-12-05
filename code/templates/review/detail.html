@@ -1,23 +1,53 @@
+{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Detalhes da Review — Joystick Juice{% endblock %}
+{% block title %}Detalhes da Avaliação — Joystick Juice{% endblock %}
 
 {% block content %}
-<h1>Detalhes da Avaliação</h1>
+<main class="main-content flex-grow-1 d-flex justify-content-center py-5">
 
-<div class="review-card">
-  <div class="review-info">
-    <p><strong>Jogo:</strong> {{ review.game.title }}</p>
-    <p><strong>Usuário:</strong> {{ review.user.username }}</p>
-    <p><strong>Nota:</strong> {{ review.rating }}</p>
-    <p><strong>Comentário:</strong></p>
-    <p>{{ review.comment }}</p>
+  <div class="page-container" style="max-width: 700px;">
+    <div class="panel shadow p-4 p-md-5">
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0 theme-accent">
+          Avaliação de "{{ review.game.title }}"
+        </h2>
+
+        {% if request.user == review.user %}
+          <div class="review-actions d-flex gap-2">
+            <a href="{% url 'edit_review' review.pk %}" class="btn btn-sm btn-primary">
+              <i class="fas fa-edit me-1"></i> Editar
+            </a>
+            <a href="{% url 'delete_review' review.pk %}" class="btn btn-sm btn-danger">
+              <i class="fas fa-trash-alt me-1"></i> Excluir
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+      <hr>
+
+      <div class="review-info mb-3">
+        <p>
+          <strong>Usuário:</strong>
+          <a href="{% url 'account_detail_admin' review.user.pk %}" class="text-decoration-none theme-accent">
+            {{ review.user.username }}
+          </a>
+        </p>
+        <p><strong>Nota:</strong> {{ review.rating }}/5</p>
+        <p><strong>Comentário:</strong></p>
+        <p class="border p-3 bg-light rounded">{{ review.comment }}</p>
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="{% url 'list_reviews' review.game.pk %}" class="btn btn-custom-light">
+          <i class="fas fa-arrow-left me-1"></i> Voltar para Avaliações
+        </a>
+      </div>
+
+    </div>
   </div>
 
-  <div class="review-actions">
-    <a href="{% url 'edit_review' review.pk %}">Editar</a> |
-    <a href="{% url 'delete_review' review.pk %}">Excluir</a>
-  </div>
-</div>
-
+</main>
 {% endblock %}

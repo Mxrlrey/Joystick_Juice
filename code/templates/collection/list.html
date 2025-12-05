@@ -37,9 +37,7 @@
           <p class="text-muted flex-grow-1 mb-3">{{ gl.description|truncatechars:140 }}</p>
 
           <div class="mt-auto d-flex align-items-center gap-2">
-            <a href="{% url 'list_detail' pk=gl.pk %}" class="btn btn-custom-outline btn-sm">
-              <i class="fas fa-eye me-1"></i> Ver
-            </a>
+            
 
             {% if request.user.is_authenticated and request.user != gl.owner %}
               {% comment %} opcional: seguir autor/curtir lista {% endcomment %}
