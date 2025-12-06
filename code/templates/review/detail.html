@@ -4,16 +4,6 @@
 
 {% block content %}
 <div class="page-container main-content">
-  {% if messages %}
-    <div class="mb-3">
-      {% for message in messages %}
-        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-primary{% endif %} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
 
   <div class="panel review-panel glass-effect">
     <div class="d-flex justify-content-between align-items-start mb-3">
@@ -70,42 +60,43 @@
 
           <div id="comments-list">
             {% for c in comments %}
-              <div class="d-flex mb-3" id="comment-{{ c.pk }}">
-                <a class="user-avatar-link me-3" href="{% url 'account_detail_admin' c.user.pk %}">
-                  <div class="user-avatar">
-                    {% if c.user.person and c.user.person.avatar_url %}
-                      <img src="{{ c.user.person.avatar_url.url }}" alt="{{ c.user.username }}" class="user-avatar-img">
-                    {% else %}
-                      <img src="{% static 'img/global/default-avatar.svg' %}" alt="{{ c.user.username }}" class="user-avatar-img">
-                    {% endif %}
-                  </div>
-                </a>
-
-                <div class="flex-fill">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                      <a class="user-nickname-link" href="{% url 'account_detail_admin' c.user.pk %}">
-                        <span class="user-nickname">{{ c.user.username }}</span>
-                      </a>
-                      <small class="text-muted ms-2">{{ c.created_at|date:"d/m/Y H:i" }}</small>
-                    </div>
-
-                    <div class="text-end">
-                      {% if user.is_authenticated and user == c.user %}
-                        <a class="btn btn-outline-secondary btn-sm me-1" href="{% url 'edit_comment' c.pk %}">Editar</a>
-                        <a class="btn btn-outline-danger btn-sm me-1" href="{% url 'delete_comment' c.pk %}">Excluir</a>
+              <div class="mb-3" id="comment-{{ c.pk }}">
+                <div class="d-flex align-items-center mb-2">
+                  <a class="user-avatar-link me-2" href="{% url 'account_detail_admin' c.user.pk %}">
+                    <div class="user-avatar">
+                      {% if c.user.person and c.user.person.avatar_url %}
+                        <img src="{{ c.user.person.avatar_url.url }}" alt="{{ c.user.username }}" class="user-avatar-img">
+                      {% else %}
+                        <img src="{% static 'img/global/default-avatar.svg' %}" alt="{{ c.user.username }}" class="user-avatar-img">
                       {% endif %}
                     </div>
+                  </a>
+                
+                  <a class="user-nickname-link me-2" href="{% url 'account_detail_admin' c.user.pk %}">
+                    <span class="user-nickname fw-medium">{{ c.user.username }}</span>
+                  </a>
+                  <small class="text-muted me-auto">{{ c.created_at|date:"d/m/Y H:i" }}</small>
+                  <div class="text-end">
+                    {% if user.is_authenticated and user == c.user %}
+                      <a class="btn btn-outline-secondary btn-sm me-1" href="{% url 'edit_comment' c.pk %}">Editar</a>
+                      <a class="btn btn-outline-danger btn-sm me-1" href="{% url 'delete_comment' c.pk %}">Excluir</a>
+                    {% endif %}
                   </div>
-
-                  <div id="comment-text-{{ c.pk }}" class="mt-2 mb-2">
-                    <p class="mb-0">{{ c.opinion|linebreaks }}</p>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div id="comment-text-{{ c.pk }}">
+                      <p class="mb-2">{{ c.opinion|linebreaks }}</p>
+                    </div>
                   </div>
                 </div>
               </div>
-              <hr>
+              
+              {% if not forloop.last %}
+                <hr class="my-3">
+              {% endif %}
             {% empty %}
-              <p class="text-muted">Seja o primeiro a comentar esta review.</p>
+              <p class="text-muted text-center py-4">Seja o primeiro a comentar esta review.</p>
             {% endfor %}
           </div>
         </div>
@@ -116,4 +107,3 @@
   </div>
 </div>
 {% endblock %}
-

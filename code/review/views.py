@@ -82,17 +82,17 @@ def delete_review(request, pk):
 def create_comment(request, review_id):
 
     review = get_object_or_404(Review, pk=review_id)
-
+    
     if request.method == 'POST':
-        form = CommentForm(request.POST)
+        form = CommentForm(request.POST)  
         if form.is_valid():
             comment = form.save(commit=False)
             comment.user = request.user
             comment.review = review
             comment.save()
             return redirect('detail_review', review.pk)
-        else:
-            form = CommentForm()
+    else:
+        form = CommentForm()
 
     return render(request, 'review/comment_form.html', {
         'form': form,
@@ -120,8 +120,8 @@ def edit_comment(request, pk):
         if form.is_valid():
             form.save() 
             return redirect('detail_review', comment.review.pk)
-        else:
-            form = CommentForm(instance=comment)
+    else:
+        form = CommentForm(instance=comment)
 
     return render(request, 'review/comment_form.html', {
         'form': form,
@@ -141,7 +141,9 @@ def delete_comment(request, pk):
         review_pk = comment.review.pk
         comment.delete()
         return redirect('detail_review', review_pk)
-    form = CommentForm(instance=comment)
+    else:
+        form = CommentForm(instance=comment)
+
     for f in form.fields.values():
         f.disabled = True
 
