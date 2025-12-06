@@ -3,7 +3,7 @@
 Este é o repositório do **Joystick Juice**, um sistema web completo desenvolvido com Django que permite gerenciar jogos, clubes, coleções, avaliações e comentários. Além disso, a plataforma integra a **API do IGDB** para importar jogos automaticamente.
 
 > 🔗 **Repositório:** [https://github.com/Mxrlrey/Joystick_Juice.git](https://github.com/Mxrlrey/Joystick_Juice.git)
-> 🔗 **Youtube:** 
+> 🔗 **Youtube:** [https://youtu.be/oH8pi-_Pq50](https://youtu.be/oH8pi-_Pq50)
 ---
 
 ## 🚀 O que este projeto faz
