@@ -219,6 +219,8 @@ hr{
 .custom-footer {
     background: var(--deep);
     border-top: 1px solid var(--soft);
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
 }
 
 .footer-links a {

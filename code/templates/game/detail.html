@@ -75,13 +75,13 @@
                         </form>
 
                         {% if request.user.is_authenticated and review_exists %}
-                            <button class="btn action-btn w-100 py-2 btn-info-subtle text-info-emphasis"
+                            <button class="btn-primary"
                                 onclick="window.location.href='{% url 'detail_review' user_review.pk %}'">
                                 <i class="fa-solid fa-eye me-2"></i>
                                 <span>Ver Sua Review</span>
                             </button>
                         {% else %}
-                            <button class="btn action-btn w-100 py-2 btn-info"
+                            <button class="btn-primary"
                                 onclick="window.location.href='{% url 'create_review' game.pk %}'">
                                 <i class="fa-solid fa-star me-2"></i>
                                 <span>Fazer Review</span>
