@@ -6,9 +6,9 @@ User = settings.AUTH_USER_MODEL
 
 class GameList(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="game_lists")
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-    is_public = models.BooleanField(default=False)
+    name = models.CharField("nome", max_length=100)
+    description = models.TextField("descrição", blank=True)
+    is_public = models.BooleanField("É público", default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

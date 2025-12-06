@@ -4,7 +4,6 @@
 
 {% block content %}
 <div class="page-container main-content">
-  <!-- MESSAGES -->
   {% if messages %}
     <div class="mb-3">
       {% for message in messages %}
@@ -46,7 +45,6 @@
     <hr>
 
     <div class="row g-4">
-      <!-- Review main / comments -->
       <div class="col-12">
         <div class="panel p-3 mb-3">
           <h2 class="h6 text-muted mb-2">Review</h2>
@@ -59,7 +57,6 @@
           {% endif %}
         </div>
 
-        <!-- Area de comentários -->
         <div class="panel p-3 mb-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h3 class="h6 mb-0">Comentários ({{ comments|length }})</h3>
@@ -71,7 +68,6 @@
             {% endif %}
           </div>
 
-          <!-- Lista de comentários -->
           <div id="comments-list">
             {% for c in comments %}
               <div class="d-flex mb-3" id="comment-{{ c.pk }}">
@@ -102,7 +98,6 @@
                     </div>
                   </div>
 
-                  <!-- TEXTO DO COMENTÁRIO -->
                   <div id="comment-text-{{ c.pk }}" class="mt-2 mb-2">
                     <p class="mb-0">{{ c.opinion|linebreaks }}</p>
                   </div>

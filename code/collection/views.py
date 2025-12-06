@@ -14,12 +14,9 @@ import json
 def user_is_owner(obj, user):
     return hasattr(obj, "owner") and obj.owner == user
 
-
 @login_required
 def user_lists(request):
-    """
-    Renderiza collection/user_list.html e fornece 'user_lists' no contexto.
-    """
+
     user_lists = GameList.objects.filter(owner=request.user).order_by('-created_at')
 
     context = {
@@ -28,9 +25,7 @@ def user_lists(request):
     return render(request, "collection/user_list.html", context)
 
 def public_lists(request):
-    """
-    Mostra somente as listas públicas de outros usuários.
-    """
+ 
     lists = GameList.objects.filter(is_public=True)
 
     if request.user.is_authenticated:
@@ -44,7 +39,7 @@ def public_lists(request):
 
 @login_required
 def create_list(request):
-    """Create a new GameList (owner = request.user)."""
+
     if request.method == "POST":
         form = GameListForm(request.POST)
         if form.is_valid():
@@ -60,7 +55,7 @@ def create_list(request):
 
 @login_required
 def list_detail(request, pk):
-    """Show a list and its items. Only owner or public lists visible."""
+
     game_list = get_object_or_404(GameList, pk=pk)
     if not game_list.is_public and not user_is_owner(game_list, request.user):
         raise Http404()
@@ -70,7 +65,7 @@ def list_detail(request, pk):
 
 @login_required
 def edit_list(request, pk):
-    """Edit a GameList (only owner)."""
+
     game_list = get_object_or_404(GameList, pk=pk)
     if not user_is_owner(game_list, request.user):
         return HttpResponseForbidden("Você não tem permissão para editar esta lista.")
@@ -88,7 +83,7 @@ def edit_list(request, pk):
 
 @login_required
 def delete_list(request, pk):
-    """Delete a GameList (only owner). Confirm via POST."""
+
     game_list = get_object_or_404(GameList, pk=pk)
     if not user_is_owner(game_list, request.user):
         return HttpResponseForbidden("Você não tem permissão para deletar esta lista.")
@@ -101,7 +96,7 @@ def delete_list(request, pk):
 
 @login_required
 def add_item(request, list_pk):
-    """Add an item to a list. list_pk required in URL."""
+ 
     game_list = get_object_or_404(GameList, pk=list_pk)
     if not user_is_owner(game_list, request.user):
         return HttpResponseForbidden("Você não tem permissão para adicionar itens a esta lista.")
@@ -124,7 +119,7 @@ def add_item(request, list_pk):
 
 @login_required
 def edit_item(request, list_pk, item_pk):
-    """Edit an item in a list (only owner of the list)."""
+
     game_list = get_object_or_404(GameList, pk=list_pk)
     if not user_is_owner(game_list, request.user):
         return HttpResponseForbidden("Você não tem permissão para editar itens desta lista.")
@@ -144,7 +139,7 @@ def edit_item(request, list_pk, item_pk):
 
 @login_required
 def remove_item(request, list_pk, item_pk):
-    """Remove an item from a list (only owner). Confirm via POST."""
+
     game_list = get_object_or_404(GameList, pk=list_pk)
     if not user_is_owner(game_list, request.user):
         return HttpResponseForbidden("Você não tem permissão para remover itens desta lista.")

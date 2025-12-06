@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from .models import Review, Comment
 from .forms import ReviewForm, CommentForm
 from game.models import Game
@@ -19,7 +18,6 @@ def create_review(request, game_id):
             review.user = request.user
             review.game = game
             review.save()
-            messages.success(request, "Avaliação criada com sucesso.")
             return redirect('game_detail', game.pk)
     else:
         form = ReviewForm()
@@ -57,7 +55,6 @@ def edit_review(request, pk):
         form = ReviewForm(request.POST, instance=review)
         if form.is_valid():
             form.save()
-            messages.success(request, "Avaliação atualizada com sucesso.")
             return redirect('detail_review', pk=pk)
     else:
         form = ReviewForm(instance=review)
@@ -75,7 +72,6 @@ def delete_review(request, pk):
     if request.method == 'POST':
         game_id = review.game.pk
         review.delete()
-        messages.success(request, "Avaliação removida.")
         return redirect('game_detail', game_id=game_id)
 
     return render(request, "review/form.html", {
@@ -94,12 +90,9 @@ def create_comment(request, review_id):
             comment.user = request.user
             comment.review = review
             comment.save()
-            messages.success(request, "Comentário criado com sucesso.")
             return redirect('detail_review', review.pk)
         else:
-            messages.error(request, "Há erros no formulário. Verifique e tente novamente.")
-    else:
-        form = CommentForm()
+            form = CommentForm()
 
     return render(request, 'review/comment_form.html', {
         'form': form,
@@ -120,19 +113,15 @@ def edit_comment(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
 
     if comment.user != request.user:
-        messages.error(request, "Você não tem permissão para editar este comentário.")
         return redirect('detail_review', comment.review.pk)
 
     if request.method == 'POST':
         form = CommentForm(request.POST, instance=comment)
         if form.is_valid():
             form.save() 
-            messages.success(request, "Comentário atualizado com sucesso.")
             return redirect('detail_review', comment.review.pk)
         else:
-            messages.error(request, "Erro no formulário. Verifique e tente novamente.")
-    else:
-        form = CommentForm(instance=comment)
+            form = CommentForm(instance=comment)
 
     return render(request, 'review/comment_form.html', {
         'form': form,
@@ -146,13 +135,11 @@ def delete_comment(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
     
     if comment.user != request.user:
-        messages.error(request, "Você não tem permissão para excluir este comentário.")
         return redirect('detail_review', comment.review.pk)
 
     if request.method == 'POST':
         review_pk = comment.review.pk
         comment.delete()
-        messages.success(request, "Comentário excluído com sucesso.")
         return redirect('detail_review', review_pk)
     form = CommentForm(instance=comment)
     for f in form.fields.values():

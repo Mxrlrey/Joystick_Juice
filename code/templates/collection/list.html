@@ -40,7 +40,6 @@
             
 
             {% if request.user.is_authenticated and request.user != gl.owner %}
-              {% comment %} opcional: seguir autor/curtir lista {% endcomment %}
               <a href="{% url 'toggle_favorite' game_id=gl.owner.pk %}" class="btn btn-sm btn-outline-primary ms-auto">
                 <i class="fas fa-star me-1"></i> Seguir autor
               </a>

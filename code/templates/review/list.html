@@ -3,6 +3,10 @@
 
 {% block title %}Avaliações — {{ game.title }}{% endblock %}
 
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/review/list.css' %}">
+{% endblock %}
+
 {% block content %}
 <main class="main-content py-4">
   <div class="container">
@@ -36,12 +40,12 @@
           <div class="row g-3">
             {% for review in reviews %}
               <div class="col-12">
-                <article class="card p-3 shadow-sm review-card" aria-labelledby="review-{{ review.pk }}">
+                <article class="panel p-3 mb-3" aria-labelledby="review-{{ review.pk }}">
                   <div class="d-flex gap-3">
                     <div style="width:56px; flex:0 0 56px;">
-                      <img src="{% if review.user.person.avatar_url %}{{ review.user.person.avatar_url.url }}{% else %}{% static 'img/avatar-placeholder.png' %}{% endif %}"
-     alt="Avatar de {{ review.user.username }}"
-     class="rounded-circle img-fluid" style="width:56px; height:56px; object-fit:cover;">
+                      <img src="{% if review.user.person.avatar_url %}{{ review.user.person.avatar_url.url }}{% else %}{% static 'img/global/default-avatar.svg' %}{% endif %}"
+                          alt="Avatar de {{ review.user.username }}"
+                          class="rounded-circle img-fluid" style="width:56px; height:56px; object-fit:cover;">
 
                     </div>
 
@@ -64,7 +68,7 @@
                         </div>
                       </header>
 
-                      <div class="review-comment mt-2" style="white-space:pre-wrap;">
+                      <div class="review-comment mt-3 mb-3 ms-3 text-start">
                         {{ review.comment|default:"—" }}
                       </div>
 
@@ -111,6 +115,7 @@
               </ul>
             </nav>
           {% endif %}
+          
 
         {% else %}
           <div class="text-center py-5 text-muted">
@@ -125,9 +130,4 @@
   </div>
 </main>
 
-<style>
-  .review-card { border-radius: 10px; }
-  .rating-stars .stars-outer { color: #ffd055; }
-  .rating-stars .stars-inner { color: #ffd055; }
-</style>
 {% endblock %}

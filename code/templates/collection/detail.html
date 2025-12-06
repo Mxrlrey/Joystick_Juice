@@ -1,103 +1,15 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}{{ list.name }}{% endblock %}
 
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/collection/details.css' %}">{% endblock %}
+
+
 {% block content %}
-<style>
-  .page-center {
-    display: flex;
-    justify-content: center;
-  }
-  .list-wrapper {
-    width: 100%;
-    max-width: 980px; /* controla a largura centralizada */
-  }
-  .hero-gradient{
-    background: linear-gradient(90deg, rgba(13,110,253,0.06), rgba(102,16,242,0.02));
-    border-radius: .5rem;
-  }
-  .muted-sm { color: #6c757d; font-size: .92rem; }
-
-  /* grid de jogos */
-  .games-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-
-  .game-card {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    border-radius: 10px;
-    overflow: hidden;
-    background: transparent !important; /* remove fundo branco */
-    border: none !important; /* remove borda branca */
-    transition: transform .12s ease, box-shadow .12s ease;
-    padding: 0;
-}
-.game-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 14px 40px rgba(0,0,0,0.15);
-}
-
-  .game-thumb {
-    width: 100%;
-    height: 300px;
-    background-size: cover;
-    background-position: center;
-  }
-  .game-thumb.placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f5f5f7;
-    color: #888;
-    font-size: 1.6rem;
-    height: 130px;
-  }
-
-  .game-info {
-    padding: 0.75rem 0.9rem;
-    border-top: 1px solid rgba(0,0,0,0.03);
-  }
-  .game-title { font-weight: 600; font-size: 0.98rem; line-height: 1.1; }
-  .game-sub { font-size: 0.85rem; color: #6c757d; margin-top: 0.25rem; }
-
-  /* wrapper do header/actions */
-  .list-actions { display:flex; gap:.5rem; align-items:center; }
-  .meta-badges { gap:.5rem; display:flex; align-items:center; flex-wrap:wrap; }
-
-  /* botões de editar/remover alinhados à direita de cada card (small) */
-  .card-actions {
-    display:flex;
-    gap:0.4rem;
-    padding: 0.5rem 0.8rem;
-    align-items:center;
-    justify-content:flex-end;
-  }
-  .card-actions .btn { padding: .25rem .5rem; font-size:.82rem; }
-
-  @media (max-width: 576px) {
-    .game-thumb { height: 110px; }
-  }
-
-  .btn-fav-active {
-    background: rgba(255, 179, 102, 0.25) !important;
-    border-color: #ffb366 !important;
-    color: #ffb366 !important;
-    transform: scale(1.07);
-}
-.dragging {
-    opacity: .6;
-    transform: scale(.95);
-}
-</style>
-
 <div class="container mt-4 page-center">
   <div class="list-wrapper">
 
-    <!-- Voltar -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
   {% if request.META.HTTP_REFERER %}
@@ -132,7 +44,6 @@
       </div>
     </div>
 
-    <!-- Cabeçalho da lista -->
     <div class="p-3 hero-gradient rounded mb-3">
       <div class="d-flex justify-content-between align-items-start">
         <div>
@@ -158,11 +69,9 @@
       </div>
     </div>
 
-    <!-- Grid de jogos -->
     {% if items %}
       <div class="games-grid">
         {% for it in items %}
-          {# cada card é um link para game_detail #}
           <div class="d-flex flex-column item-card" data-item-id="{{ it.pk }}" style="background:transparent;">
             <a href="{% url 'game_detail' it.game.id %}" class="game-card">
               {% if it.game.cover_url %}
@@ -180,7 +89,6 @@
               </div>
             </a>
 
-            {# ações pequenas sob o card (só para o dono da lista) #}
             <div class="card-actions">
               {% if request.user == list.owner %}
                 <a href="{% url 'edit_item' list_pk=list.pk item_pk=it.pk %}" class="btn btn-sm btn-outline-secondary">
@@ -195,7 +103,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <div class="card border-0 rounded-3 shadow-sm p-4 text-center mt-3">
+      <div class="panel p-3 mb-3">
         <h6 class="mb-2">Nenhum item ainda</h6>
         <p class="text-muted mb-3">Adicione jogos a esta lista para começar.</p>
         {% if request.user == list.owner %}
@@ -208,37 +116,22 @@
 
 </div>
 
-
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    {% if request.user == list.owner %}
-        const grid = document.querySelector(".games-grid");
-        if (!grid) return;
-
-        Sortable.create(grid, {
-            animation: 150,
-            ghostClass: "dragging",
-            handle: ".game-card",
-
-            onEnd: function () {
-                const ids = [...document.querySelectorAll(".item-card")]
-                    .map(el => el.dataset.itemId);
-
-                fetch("{% url 'reorder_list' list_pk=list.pk %}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": "{{ csrf_token }}"
-                    },
-                    body: JSON.stringify({ order: ids })
-                });
-            }
-        });
-    {% endif %}
-});
+  const reorderUrl = "{% url 'reorder_list' list_pk=list.pk %}";
+  const csrfToken = "{{ csrf_token }}";
+  {% if request.user == list.owner %}
+    const isOwner = true;
+  {% else %}
+    const isOwner = false;
+  {% endif %}
 </script>
+
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="{% static 'js/collection/detail.js' %}"></script>
+{% endblock %}
+
 
 
 {% endblock %}
