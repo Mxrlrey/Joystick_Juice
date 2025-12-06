@@ -3,7 +3,7 @@
 Este é o repositório do **Joystick Juice**, um sistema web completo desenvolvido com Django que permite gerenciar jogos, clubes, coleções, avaliações e comentários. Além disso, a plataforma integra a **API do IGDB** para importar jogos automaticamente.
 
 > 🔗 **Repositório:** [https://github.com/Mxrlrey/Joystick_Juice.git](https://github.com/Mxrlrey/Joystick_Juice.git)
-
+> 🔗 **Youtube:** 
 ---
 
 ## 🚀 O que este projeto faz
@@ -107,7 +107,16 @@ docker compose exec web python manage.py migrate
 ```
 ---
 ### 5️⃣ Acessar a aplicação
-Abra o navegador e vá para:
+
+Primeiramente crie um super usuario via terminal com "docker compose exec web python3 manage.py createsuperuser" para fazer login no sistema e adicionar jogos no sistema pesquisando na API. 
+
+Siga o fluxo:
+
+> http://localhost:8000/access/login/
+
+> http://localhost:8000/game/add
+
+logo após é somente criar um usuario comum e seguir o fluxo padrão, abra o navegador e vá para:
 
 > http://localhost:8000/account/signup
 
@@ -123,6 +132,8 @@ Quando esta etapa de cadastro/login estiver finalizada, você será redirecionad
 
 ### 6️⃣ Conclusão 
 Agora você pode aproveitar a aplicação acessando, pelas telas e via Navbar, as funcionalidades que desejar.
+
+
 
 ---
 
