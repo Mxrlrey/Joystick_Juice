@@ -38,12 +38,6 @@
 
           <div class="mt-auto d-flex align-items-center gap-2">
             
-
-            {% if request.user.is_authenticated and request.user != gl.owner %}
-              <a href="{% url 'toggle_favorite' game_id=gl.owner.pk %}" class="btn btn-sm btn-outline-primary ms-auto">
-                <i class="fas fa-star me-1"></i> Seguir autor
-              </a>
-            {% endif %}
           </div>
         </div>
       </div>
