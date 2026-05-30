@@ -10,11 +10,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
+        migrations.RenameField(
             model_name='game',
-            name='gameID',
+            old_name='gameID',
+            new_name='id',
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='game',
             name='id',
             field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),

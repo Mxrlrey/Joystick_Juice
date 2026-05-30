@@ -22,11 +22,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'rest_framework',
+    'oauth2_provider',
     'user',
     'game',
     'review',
     'club',
     'collection',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -98,3 +101,20 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+        'oauth2_provider.contrib.rest_framework.TokenHasReadWriteScope',
+    ),
+}
+
+OAUTH2_PROVIDER = {
+    'SCOPES': {
+        'read': 'Pode ler dados da API',
+        'write': 'Pode criar, alterar e remover dados da API',
+    }
+}

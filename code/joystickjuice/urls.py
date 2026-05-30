@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
 from game.views import home_page
 
 urlpatterns = [
@@ -12,6 +13,11 @@ urlpatterns = [
     path('review/', include('review.urls')),
     path('club/', include('club.urls')),
     path('collections/', include('collection.urls')),
+    path('api/', include('api.urls')),
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('client/', TemplateView.as_view(template_name='api_client/login.html'), name='api_client_login'),
+    path('client/games/', TemplateView.as_view(template_name='api_client/games.html'), name='api_client_games'),
+    path('client/games/form/', TemplateView.as_view(template_name='api_client/game_form.html'), name='api_client_game_form'),
     path("", include("game.urls")),
 ]
 
