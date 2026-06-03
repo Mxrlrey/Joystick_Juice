@@ -140,12 +140,6 @@ Fluxo esperado:
 - O `client_secret` fica no servidor Node, nao no JavaScript do navegador
 - O token OAuth2 e enviado como `Bearer Token` nas chamadas protegidas
 
-## Cliente legado dentro do Django
-Ainda existe uma demonstracao antiga servida pelo proprio Django em:
-- `http://localhost:8000/client/`
-
-Ela foi mantida como referencia, mas a entrega principal do requisito `cliente separado` agora esta em `client/`.
-
 ## Equipe
 - Djavan Teixeira
 - Gabriel Rocha
