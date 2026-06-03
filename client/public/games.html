@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogos da API | Joystick Juice</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar">
+      <a class="brand" href="/">Joystick Juice Client</a>
+      <div class="nav-links">
+        <a href="/">Login</a>
+        <a href="/games.html">Listar jogos</a>
+        <a href="/game-form.html">Novo jogo</a>
+      </div>
+    </nav>
+
+    <section class="panel">
+      <div class="section-title">
+        <div>
+          <h1>Jogos da API</h1>
+          <p class="muted">Listagem protegida consumida por um cliente separado do Django.</p>
+        </div>
+        <span id="token-status" class="status offline">Sem token</span>
+      </div>
+
+      <div class="button-row">
+        <button id="refresh-games" type="button">Atualizar</button>
+        <a class="button secondary" href="/game-form.html">Adicionar jogo</a>
+        <button id="clear-token" type="button" class="secondary">Limpar token</button>
+      </div>
+
+      <p id="message" class="message"></p>
+      <div id="games" class="games"></div>
+    </section>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/games.js"></script>
+</body>
+</html>

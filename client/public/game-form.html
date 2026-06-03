@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Jogo | Joystick Juice</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar">
+      <a class="brand" href="/">Joystick Juice Client</a>
+      <div class="nav-links">
+        <a href="/">Login</a>
+        <a href="/games.html">Listar jogos</a>
+        <a href="/game-form.html">Novo jogo</a>
+      </div>
+    </nav>
+
+    <section class="panel">
+      <div class="section-title">
+        <div>
+          <h1 id="form-title">Adicionar jogo</h1>
+          <p class="muted">CRUD completo do recurso principal em <code>/api/games/</code>.</p>
+        </div>
+        <span id="token-status" class="status offline">Sem token</span>
+      </div>
+
+      <form id="game-form" class="game-form">
+        <input id="game-id" type="hidden">
+        <label>
+          Titulo
+          <input id="title" required>
+        </label>
+        <label>
+          Genero
+          <input id="genre" required>
+        </label>
+        <label>
+          Lancamento
+          <input id="release-date" type="date" required>
+        </label>
+        <label>
+          Desenvolvedora
+          <input id="developer" required>
+        </label>
+        <label class="wide">
+          Sinopse
+          <textarea id="synopsis" rows="5" required></textarea>
+        </label>
+        <label>
+          Capa URL
+          <input id="cover-url" type="url">
+        </label>
+        <label>
+          Banner URL
+          <input id="banner-url" type="url">
+        </label>
+        <label class="wide">
+          Trailer URL
+          <input id="trailer-url" type="url">
+        </label>
+        <div class="button-row wide">
+          <button type="submit">Salvar via API</button>
+          <a class="button secondary" href="/games.html">Voltar para listagem</a>
+          <button id="clear-form" type="button" class="secondary">Limpar</button>
+        </div>
+      </form>
+
+      <p id="message" class="message"></p>
+    </section>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/game-form.js"></script>
+</body>
+</html>

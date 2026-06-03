@@ -1,148 +1,159 @@
-# 🎮 Joystick Juice - Plataforma para Avaliação de Jogos
+# Joystick Juice
 
-Este é o repositório do **Joystick Juice**, um sistema web completo desenvolvido com Django que permite gerenciar jogos, clubes, coleções, avaliações e comentários. Além disso, a plataforma integra a **API do IGDB** para importar jogos automaticamente.
+Aplicacao com backend Django + Django REST Framework e autenticacao OAuth2 via Django OAuth Toolkit, acompanhada de um cliente separado em Node.js para demonstrar o consumo seguro da API.
 
-> 🔗 **Repositório:** [https://github.com/Mxrlrey/Joystick_Juice.git](https://github.com/Mxrlrey/Joystick_Juice.git)
-> 🔗 **Youtube:** [https://youtu.be/oH8pi-_Pq50](https://youtu.be/oH8pi-_Pq50)
----
+## Estrutura de entrega
+- `api/`: documentacao da API entregue no trabalho
+- `client/`: cliente separado do Django, implementado em Node.js + Express + JavaScript
+- `code/api/`: implementacao real da API DRF dentro do projeto Django
+- `code/game/`, `code/review/`, `code/user/`, `code/collection/`, `code/club/`: apps da aplicacao
+- `code/joystickjuice/`: settings, urls e configuracoes do projeto
 
-## 🚀 O que este projeto faz
-A plataforma funciona como um aplicativo social de jogos, permitindo que os usuários:
+## Requisitos atendidos
+### API
+- Django REST Framework: implementado em `code/api/`
+- OAuth2 com Django OAuth Toolkit: configurado em `code/joystickjuice/settings.py`, `code/joystickjuice/urls.py` e `code/entrypoint.sh`
+- Tres models relacionados: `Game`, `Review`, `Comment`
+- CRUD completo de model principal: `Game` em `/api/games/`
+- Serializers: `GameSerializer`, `ReviewSerializer`, `CommentSerializer`
 
-- Criem suas próprias listas de jogos.  
-- Avaliem jogos, adicionem notas e escrevam reviews detalhados.  
-- Recebam comentários de outros usuários nas suas avaliações.  
-- Entrem em **clubes de nichos específicos** (por exemplo: clubes de filmes de terror, fantasia, etc.) e participem de conversas temáticas no chat do clube.  
-- Recebam e troquem recomendações sobre jogos dentro dos clubes.  
----
+### Cliente
+- Tecnologia diferente de Python/Django: Node.js + Express no servidor do cliente e JavaScript no navegador
+- Login OAuth2 com obtencao de token: `POST /auth/token` no cliente, que encaminha para `POST /o/token/` no Django
+- Acesso a rota protegida: CRUD de `/api/games/` via proxy do cliente
+- Interface funcional: paginas HTML em `client/public/`
 
-## ⚙️ Requisitos
-Antes de iniciar, você precisa ter instalado:
-- 🐳 **Docker** e **Docker Compose**
-- 💻 **Git** (para clonar o repositório)
----
+## Modelos e relacionamentos
+- `Game`
+- `Review` -> relacionamento com `Game` e `User`
+- `Comment` -> relacionamento com `Review` e `User`
 
-## 📁 Estrutura importante do projeto
+## Rotas da API
+### OAuth2
+- `POST /o/token/`
 
-| Pasta | Descrição |
-|-------|-----------|
-| `code/club` | App responsável por gerenciar os clubes de usuários, incluindo chat, membros e tópicos. |
-| `code/collection` | App para gerenciar collections de jogos, listas personalizadas de usuários. |
-| `code/game` | App principal para CRUD de jogos, integração com a API do IGDB. |
-| `code/joystickjuice` | Pasta do projeto Django com configurações, URLs, WSGI, ASGI e utilitários gerais. |
-| `code/media` | Arquivos de mídia enviados pelos usuários, como avatars e imagens de jogos. |
-| `code/review` | App para criar, editar e listar reviews de jogos, incluindo comentários e avaliações. |
-| `code/static` | Arquivos estáticos (CSS, JS, imagens) utilizados pelo front-end da aplicação. |
-| `code/templates` | Templates HTML do projeto, incluindo páginas de CRUD, autenticação e layouts gerais. |
-| `code/user` | App de gerenciamento de usuários, perfis, autenticação, formulários e dados relacionados. |
-| `docker-compose.yml` | Configuração de containers Docker (Django, DB, etc.). |
-| `Dockerfile` | Define a imagem Docker do projeto para execução do servidor. |
-| `README.md` | Documento de instruções, descrição do projeto e informações de uso. |
+### Recursos
+- `GET /api/games/`
+- `POST /api/games/`
+- `GET /api/games/{id}/`
+- `PUT/PATCH /api/games/{id}/`
+- `DELETE /api/games/{id}/`
+- `GET /api/reviews/`
+- `POST /api/reviews/`
+- `GET /api/comments/`
+- `POST /api/comments/`
 
----
-
-## 🧰 Instalação e execução
-
-### 1️⃣ Clonar o repositório
+## Como executar o backend
+### 1. Clonar o repositorio
 ```bash
 git clone https://github.com/Mxrlrey/Joystick_Juice.git
+cd Joystick_Juice
 ```
----
-### 2️⃣ Instalar dependências e rodar o projeto via Docker 🐳 
 
-O projeto **JoystickJuice** utiliza Docker para criar um ambiente isolado com Python 3.13, PostgreSQL e todas as dependências listadas em `requirements.txt`. Isso garante que todos os usuários tenham o mesmo ambiente, sem precisar instalar nada localmente.
-
-#### 💡 Configurar o arquivo `.env`
-Para facilitar a configuração, disponibilizamos um arquivo na raiz chamado `.env-exemplo`.  
-Renomeie-o para `.env` e preencha os valores de acordo com a tabela abaixo:
-
-| Variável | Categoria | Descrição | O que o usuário deve fazer |
-|----------|----------|-----------|---------------------------|
-| POSTGRES_DB | Banco de Dados | Nome do banco de dados que o Django irá usar | Ex: `joystickjuice_db` |
-| POSTGRES_USER | Banco de Dados | Usuário que terá acesso ao banco | Ex: `admin` |
-| POSTGRES_PASSWORD | Banco de Dados | Senha do usuário do banco | Definir senha segura |
-| DJANGO_SETTINGS_MODULE | Django | Caminho do módulo de configurações do Django | `joystickjuice.settings` |
-| DB_HOST | Django | Host onde o Django vai acessar o banco | Normalmente o serviço Docker `db` |
-| POSTGRES_HOST | Django | Host do PostgreSQL | Normalmente igual a `DB_HOST` |
-| PGADMIN_DEFAULT_EMAIL | PGAdmin | E-mail de login do PGAdmin | Ex: `admin@example.com` |
-| PGADMIN_DEFAULT_PASSWORD | PGAdmin | Senha de login do PGAdmin | Definir senha segura |
-| CLIENT_ID | API IGDB | Client ID da API IGDB | Inserir Client ID fornecido pela IGDB |
-| CLIENT_SECRET | API IGDB | Client Secret da API IGDB | Inserir Client Secret fornecido pela IGDB |
-
-> ⚠️ **Importante:** Não suba os containers antes de configurar o `.env`, caso contrário o Django pode não conseguir se conectar ao banco ou carregar as configurações.
-
-#### 💡 Subir os containers Docker e instalar dependências
-Dentro da pasta do projeto, execute:
-
+### 2. Configurar variaveis de ambiente
+Copie `.env-exemplo` para `.env` e preencha os valores:
 ```bash
-docker compose -f docker-compose.yml up --build -d
+cp .env-exemplo .env
 ```
 
-Verifique se está rodando:
+Campos importantes:
+- `POSTGRES_DB`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_HOST`
+- `DJANGO_SETTINGS_MODULE=joystickjuice.settings`
+- `DJANGO_SUPERUSER_USERNAME`
+- `DJANGO_SUPERUSER_EMAIL`
+- `DJANGO_SUPERUSER_PASSWORD`
+- `OAUTH_CLIENT_ID`
+- `OAUTH_CLIENT_SECRET`
+- `CLIENT_ID`
+- `CLIENT_SECRET`
+
+### 3. Subir containers
 ```bash
-docker ps
+docker compose up --build -d
 ```
 
-### Você verá algo como:
+Esse comando sobe:
+- `db` em `localhost` interno do Compose
+- `web` em `http://localhost:8000`
+- `client` em `http://localhost:3000`
+- `pgadminjuice` em `http://localhost:5051`
 
-| CONTAINER ID | IMAGE                   | STATUS | PORTS                  |
-|--------------|------------------------|--------|-----------------------|
-| xxxxxx       | joystickjuice_web       | Up     | 0.0.0.0:8000->8000/tcp |
-| xxxxxx       | joystickjuice_db        | Up     | 5432/tcp              |
-| xxxxxx       | pgadmin/pgadmin         | Up     | 5050/tcp              |
-
----
-### 4️⃣ Inicializar o banco de dados e aplicar migrations:
-
-Após configurar o `.env` e subir os containers, execute os comandos abaixo **via Docker Compose**:
-
-### Criar migrations (caso você tenha alterado modelos)
-
-```bash
-docker compose exec web python manage.py makemigrations
-```
-### Aplicar migrations existentes
+### 4. Aplicar migrations
 ```bash
 docker compose exec web python manage.py migrate
 ```
----
-### 5️⃣ Acessar a aplicação
 
-Primeiramente crie um super usuario via terminal com "docker compose exec web python3 manage.py createsuperuser" para fazer login no sistema e adicionar jogos no sistema pesquisando na API. 
+Observacao: o `entrypoint.sh` do backend ja executa `migrate` automaticamente ao subir o container.
 
-Siga o fluxo:
+### 5. Acessar o backend
+- Aplicacao Django: `http://localhost:8000/`
+- Admin Django: `http://localhost:8000/admin/`
+- Token OAuth2: `http://localhost:8000/o/token/`
+- API DRF: `http://localhost:8000/api/games/`
 
-> http://localhost:8000/access/login/
+## Como executar o cliente separado
+O cliente oficial da entrega esta na pasta `client/`.
 
-> http://localhost:8000/game/add
+### 1. Configurar ambiente do cliente
+```bash
+cd client
+cp .env.example .env
+```
 
-logo após é somente criar um usuario comum e seguir o fluxo padrão, abra o navegador e vá para:
+Ajuste os valores conforme seu backend. Exemplo:
+```env
+PORT=3000
+API_BASE_URL=http://localhost:8000
+OAUTH_CLIENT_ID=joystickjuice-api
+OAUTH_CLIENT_SECRET=joystickjuice-secret
+```
 
-> http://localhost:8000/account/signup
+### 2. Instalar dependencias
+```bash
+npm install
+```
 
-A aplicação deverá abrir com a tela inicial de Cadastro.
+### 3. Executar o cliente
+```bash
+npm run start
+```
 
+### 4. Acessar o cliente
+Abra:
+- `http://localhost:3000/`
 
-Após se cadastrar, você será redirecionado para a página de login. Coloque os dados cadastrados anteriormente.
-> http://localhost:8000/access/login/
+Se voce subiu tudo com Docker Compose, nao precisa instalar Node localmente para testar o cliente.
 
-Quando esta etapa de cadastro/login estiver finalizada, você será redirecionado para a tela inicial. 
-> http://localhost:8000/home/
----
+Fluxo esperado:
+1. Fazer login com usuario e senha
+2. Cliente solicita token ao proprio servidor Node em `/auth/token`
+3. Servidor Node troca credenciais com o Django OAuth Toolkit
+4. Navegador recebe `access_token`
+5. Cliente acessa `/proxy/api/games/` para listar, criar, editar e excluir jogos
 
-### 6️⃣ Conclusão 
-Agora você pode aproveitar a aplicação acessando, pelas telas e via Navbar, as funcionalidades que desejar.
+## Como o cliente se comunica com a API
+- Navegador -> `client/server.js`
+- `client/server.js` -> backend Django
+- O `client_secret` fica no servidor Node, nao no JavaScript do navegador
+- O token OAuth2 e enviado como `Bearer Token` nas chamadas protegidas
 
+## Cliente legado dentro do Django
+Ainda existe uma demonstracao antiga servida pelo proprio Django em:
+- `http://localhost:8000/client/`
 
+Ela foi mantida como referencia, mas a entrega principal do requisito `cliente separado` agora esta em `client/`.
 
----
+## Equipe
+- Djavan Teixeira
+- Gabriel Rocha
+- Marley Meira
 
-### 👥 Equipe do projeto
-
-Este trabalho foi desenvolvido pelos membros do grupo abaixo, para a disciplina **Web1** lecionada pelo Prof. Carlos Anderson.
-
-- **Djavan Teixeira** – GitHub: [@Djavantl](https://github.com/Djavantl)  
-- **Gabriel Rocha** – GitHub: [@Rocha0919](https://github.com/Rocha0919)  
-- **Marley Meira** – GitHub: [@Mxrlrey](https://github.com/Mxrlrey)  
-- **Prof. Carlos Anderson O. Silva** – GitHub: [@profcarlosanderson](https://github.com/profcarlosanderson)  
-
+## Video
+Inclua no repositorio o link do video final mostrando:
+1. Obtencao do token OAuth2
+2. Consumo de rota protegida
+3. CRUD do recurso principal
+4. Integracao Cliente <-> API

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cliente OAuth2 | Joystick Juice</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="page page-narrow">
+    <nav class="topbar">
+      <a class="brand" href="/">Joystick Juice Client</a>
+      <div class="nav-links">
+        <a href="/">Login</a>
+        <a href="/games.html">Listar jogos</a>
+        <a href="/game-form.html">Novo jogo</a>
+      </div>
+    </nav>
+
+    <section class="panel">
+      <div class="section-title">
+        <div>
+          <h1>Login OAuth2</h1>
+          <p class="muted">O navegador conversa com o servidor Node, e o servidor Node faz a troca do token com o Django OAuth Toolkit.</p>
+        </div>
+        <span id="token-status" class="status offline">Sem token</span>
+      </div>
+
+      <form id="login-form" class="login-form">
+        <label>
+          Usuario
+          <input id="username" name="username" autocomplete="username" required>
+        </label>
+        <label>
+          Senha
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+        </label>
+        <button type="submit">Entrar e obter token</button>
+      </form>
+
+      <div class="button-row">
+        <a class="button secondary" href="/games.html">Ir para jogos</a>
+        <button id="clear-token" type="button" class="secondary">Limpar token</button>
+      </div>
+
+      <p id="message" class="message"></p>
+    </section>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+</html>

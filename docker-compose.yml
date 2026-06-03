@@ -24,6 +24,19 @@ services:
       db:
         condition: service_healthy
 
+  client:
+    build:
+      context: ./client
+    environment:
+      PORT: 3000
+      API_BASE_URL: http://web:8000
+      OAUTH_CLIENT_ID: ${OAUTH_CLIENT_ID}
+      OAUTH_CLIENT_SECRET: ${OAUTH_CLIENT_SECRET}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - web
+
   pgadminjuice:
     image: dpage/pgadmin4
     container_name: pgadminjuice
