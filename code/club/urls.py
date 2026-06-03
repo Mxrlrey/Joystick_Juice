@@ -1,14 +1,25 @@
 from django.urls import path
-from . import views
+
+from .views import (
+    ClubChatView,
+    ClubCreateView,
+    ClubDeleteView,
+    ClubDetailView,
+    ClubListView,
+    ClubUpdateView,
+    JoinClubView,
+    LeaveClubView,
+    UserClubListView,
+)
 
 urlpatterns = [
-    path('create/', views.create_club, name='create_club'),
-    path('list/', views.list_clubs, name='list_clubs'),
-    path('<int:club_id>/edit/', views.edit_club, name='edit_club'),
-    path('<int:club_id>/delete/', views.delete_club, name='delete_club'),
-    path('<int:club_id>/join/', views.join_club, name='join_club'),
-    path("<int:club_id>/chat/", views.club_chat, name="club_chat"),
-    path('<int:club_id>/', views.club_detail, name='club_detail'),
-    path('user/<int:user_id>/clubs/', views.list_user_clubs, name='list_user_clubs'),
-    path('<int:club_id>/leave/', views.leave_club, name='leave_club'),
+    path('create/', ClubCreateView.as_view(), name='create_club'),
+    path('list/', ClubListView.as_view(), name='list_clubs'),
+    path('<int:club_id>/edit/', ClubUpdateView.as_view(), name='edit_club'),
+    path('<int:club_id>/delete/', ClubDeleteView.as_view(), name='delete_club'),
+    path('<int:club_id>/join/', JoinClubView.as_view(), name='join_club'),
+    path('<int:club_id>/chat/', ClubChatView.as_view(), name='club_chat'),
+    path('<int:club_id>/', ClubDetailView.as_view(), name='club_detail'),
+    path('user/<int:user_id>/clubs/', UserClubListView.as_view(), name='list_user_clubs'),
+    path('<int:club_id>/leave/', LeaveClubView.as_view(), name='leave_club'),
 ]
