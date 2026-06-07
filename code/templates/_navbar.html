@@ -51,7 +51,7 @@
                                     <img src="{{ user.person.avatar_url.url }}" alt="{{ user.username }}" class="user-avatar-img">
                                 {% else %}
                                     <!-- Avatar padrão se não tiver foto ou perfil -->
-                                    <img src="{% static 'img/global/default-avatar.svg' %}" alt="{{ c.user.username }}" class="user-avatar-img">
+                                   <img src="{% static 'img/global/default-avatar.svg' %}" alt="{{ user.username }}" class="user-avatar-img">
                                 {% endif %}
                             </div>
                         </a>
