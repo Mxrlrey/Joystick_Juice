@@ -141,7 +141,7 @@ Fluxo esperado:
 - O token OAuth2 e enviado como `Bearer Token` nas chamadas protegidas
 
 ## Equipe
-- Djavan Teixeira
+- Luis Felipe Ramos Rodrigues
 - Gabriel Rocha
 - Marley Meira
 
