@@ -3,7 +3,7 @@
     <div class="container">
         
         <!-- Logo -->
-        <a class="navbar-brand d-flex align-items-center" href="#">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}"></a>
             <img src="{% static 'img/global/logo.png' %}" alt="Joystick Juice" height="40" class="me-2">
             <span class="brand-text">Joystick Juice</span>
         </a>
@@ -51,7 +51,7 @@
                                     <img src="{{ user.person.avatar_url.url }}" alt="{{ user.username }}" class="user-avatar-img">
                                 {% else %}
                                     <!-- Avatar padrão se não tiver foto ou perfil -->
-                                    <img src="{% static 'img/global/default-avatar.svg' %}" alt="{{ c.user.username }}" class="user-avatar-img">
+                                   <img src="{% static 'img/global/default-avatar.svg' %}" alt="{{ user.username }}" class="user-avatar-img">
                                 {% endif %}
                             </div>
                         </a>
